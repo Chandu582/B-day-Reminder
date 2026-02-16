@@ -342,28 +342,32 @@
                 
                 // --- MESSAGE GENERATION ---
                                 // --- IMPROVED MESSAGE GENERATION ---
-                let msg = "";
-                let icon = "";
-                let borderColor = "";
+                // --- IMPROVED MESSAGE GENERATION ---
+let msg = "";
+let icon = "";
+let borderColor = "";
 
-                if (customMsg) {
-                    // Scenario 1: Custom Invite/Notice
-                    msg = `📢 *Hello ${item.name},* 👋\n\n${customMsg}\n\nRegards,\n*KAB Family* 🏫`;
-                    icon = '<i class="fas fa-bullhorn text-primary"></i>';
-                    borderColor = "border-invite";
-                
-                } else if (item.type === 'Birthday') {
-                    // Scenario 2: Beautiful Birthday Wish
-                    msg = `✨🎂 *Happy Birthday ${item.name}!* 🥳✨\n\n"May this special day bring you endless joy, success, and tons of precious memories!" 🌟\n\nWishing you a fantastic year ahead! 🎈\n\nWarm Regards,\n*KAB Family* 🏫`;
-                    icon = '<i class="fas fa-birthday-cake text-danger"></i>';
-                    borderColor = "border-bday";
-                
-                } else {
-                    // Scenario 3: Beautiful Anniversary Wish
-                    msg = `💖💍 *Happy Anniversary ${item.name}!* 🥂\n\n"Wishing you another year of being great together. May your love and bond grow stronger with each passing day!" ✨\n\nCheers to your special moments! 🌸\n\nBest Wishes,\n*STES Family* 🏫`;
-                    icon = '<i class="fas fa-heart text-danger"></i>';
-                    borderColor = "border-anni";
-                }
+// मैसेज के सबसे ऊपर संस्था का नाम जोड़ने के लिए:
+const header = "🏛️ *KERALA ASSOCIATION, BIHAR*\n\n";
+
+if (customMsg) {
+    // Scenario 1: Custom Invite/Notice
+    msg = `${header}📢 *Hello ${item.name},* 👋\n\n${customMsg}\n\nRegards,\n*KAB Family* 🏫`;
+    icon = '<i class="fas fa-bullhorn text-primary"></i>';
+    borderColor = "border-invite";
+
+} else if (item.type === 'Birthday') {
+    // Scenario 2: Beautiful Birthday Wish
+    msg = `${header}✨🎂 *Happy Birthday ${item.name}!* 🥳✨\n\n"May this special day bring you endless joy, success, and tons of precious memories!" 🌟\n\nWishing you a fantastic year ahead! 🎈\n\nWarm Regards,\n*KAB Family* 🏫`;
+    icon = '<i class="fas fa-birthday-cake text-danger"></i>';
+    borderColor = "border-bday";
+
+} else {
+    // Scenario 3: Beautiful Anniversary Wish
+    msg = `${header}💖💍 *Happy Anniversary ${item.name}!* 🥂\n\n"Wishing you another year of being great together. May your love and bond grow stronger with each passing day!" ✨\n\nCheers to your special moments! 🌸\n\nBest Wishes,\n*STES Family* 🏫`;
+    icon = '<i class="fas fa-heart text-danger"></i>';
+    borderColor = "border-anni";
+}
 
 
                 // WhatsApp Link
