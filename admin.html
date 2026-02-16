@@ -341,23 +341,30 @@
                 const isSent = item.lastSent === todayStr;
                 
                 // --- MESSAGE GENERATION ---
+                                // --- IMPROVED MESSAGE GENERATION ---
                 let msg = "";
                 let icon = "";
                 let borderColor = "";
 
                 if (customMsg) {
-                    msg = `*Hello ${item.name},* 👋\n\n${customMsg}\n\nRegards,\n*Admin*`;
+                    // Scenario 1: Custom Invite/Notice
+                    msg = `📢 *Hello ${item.name},* 👋\n\n${customMsg}\n\nRegards,\n*STES Family* 🏫`;
                     icon = '<i class="fas fa-bullhorn text-primary"></i>';
                     borderColor = "border-invite";
+                
                 } else if (item.type === 'Birthday') {
-                    msg = `🎂 *Happy Birthday ${item.name}!* 🥳\n\nWishing you a fantastic day filled with joy! 🎈\n\nBest Wishes,\n*Your School/Org*`;
+                    // Scenario 2: Beautiful Birthday Wish
+                    msg = `✨🎂 *Happy Birthday ${item.name}!* 🥳✨\n\n"May this special day bring you endless joy, success, and tons of precious memories!" 🌟\n\nWishing you a fantastic year ahead! 🎈\n\nWarm Regards,\n*STES Family* 🏫`;
                     icon = '<i class="fas fa-birthday-cake text-danger"></i>';
                     borderColor = "border-bday";
+                
                 } else {
-                    msg = `💍 *Happy Anniversary ${item.name}!* 💖\n\nCongratulations on another year of togetherness! 🥂\n\nBest Wishes,\n*Your School/Org*`;
+                    // Scenario 3: Beautiful Anniversary Wish
+                    msg = `💖💍 *Happy Anniversary ${item.name}!* 🥂\n\n"Wishing you another year of being great together. May your love and bond grow stronger with each passing day!" ✨\n\nCheers to your special moments! 🌸\n\nBest Wishes,\n*STES Family* 🏫`;
                     icon = '<i class="fas fa-heart text-danger"></i>';
                     borderColor = "border-anni";
                 }
+
 
                 // WhatsApp Link
                 const phone = String(item.phone).replace(/\D/g,'');
