@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Admin Panel</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        :root { 
+            --primary-grad: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --sidebar-bg: #1e1e2d;
+            --card-hover: translateY(-5px);
+        }
+        
+        body { background-color: #f3f6f9; font-family: 'Poppins', sans-serif; }
+
+        /* NAVBAR */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.04);
+            padding: 12px 20px;
+            position: fixed; top: 0; width: 100%; z-index: 1040;
+        }
+        .navbar-brand { font-weight: 700; color: #333; font-size: 1.3rem; }
+        
+        /* SIDEBAR (Offcanvas) */
+        .offcanvas { background-color: var(--sidebar-bg); color: white; width: 280px !important; }
+        .offcanvas-header { border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .nav-link { 
+            color: #a6a7b9; padding: 14px 20px; margin: 4px 10px; border-radius: 8px; 
+            font-weight: 500; transition: 0.3s; display: flex; align-items: center; gap: 12px;
+        }
+        .nav-link:hover, .nav-link.active { 
+            background: rgba(255,255,255,0.1); color: #fff; transform: translateX(5px);
+        }
+        .nav-link i { width: 20px; text-align: center; }
+
+        /* MAIN CONTENT */
+        .main-container { margin-top: 80px; padding: 20px; max-width: 1200px; margin-left: auto; margin-right: auto; }
+
+        /* CARDS */
+        .custom-card {
+            background: white; border: none; border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            transition: 0.3s ease; overflow: hidden;
+            height: 100%;
+        }
+        .custom-card:hover { transform: var(--card-hover); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+
+        /* Type Indicators */
+        .border-bday { border-left: 5px solid #ff6b6b; }
+        .border-anni { border-left: 5px solid #a29bfe; }
+        .border-invite { border-left: 5px solid #0984e3; }
+
+        .badge-role { background: #eef2f7; color: #555; padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; }
+
+        /* BUTTONS */
+        .btn-send {
+            background: #25D366; color: white; border: none; font-weight: 600;
+            padding: 10px; width: 100%; border-radius: 8px; transition: 0.2s;
+        }
+        .btn-send:hover { background: #1ebe57; color: white; }
+        
+        .btn-sent-blue {
+            background: #3b82f6 !important; /* Blue color for sent */
+            color: white !important;
+        }
+
+        /* UPLOAD ZONE */
+        .upload-zone {
+            border: 2px dashed #764ba2; background: #f8f9ff; border-radius: 12px;
+            padding: 40px; text-align: center; cursor: pointer; transition: 0.3s;
+        }
+        .upload-zone:hover { background: #f1f1fc; border-color: #5b3cc4; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center">
+                <button class="btn border-0 me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                    <i class="fas fa-bars fa-lg text-dark"></i>
+                </button>
+                <span class="navbar-brand"><i class="fas fa-crown text-warning me-2"></i>Admin Panel</span>
+            </div>
+            <button onclick="location.reload()" class="btn btn-light btn-sm fw-bold text-primary rounded-pill px-3">
+                <i class="fas fa-sync-alt me-1"></i> Refresh
+            </button>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="true" tabindex="-1" id="sidebarMenu">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title fw-bold">Menu</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0 pt-2">
+            <nav class="nav flex-column">
+                <a class="nav-link active" onclick="switchSection('dashboard')">
+                    <i class="fas fa-paper-plane"></i> Dashboard & Send
+                </a>
+                <a class="nav-link" onclick="switchSection('manage')">
+                    <i class="fas fa-database"></i> Manage Database
+                </a>
+                <a class="nav-link" onclick="switchSection('import')">
+                    <i class="fas fa-file-csv"></i> Import Excel
+                </a>
+            </nav>
+        </div>
+        <div class="p-3 border-top border-secondary">
+            <small class="text-muted d-block text-center">Version 2.0 Pro</small>
+        </div>
+    </div>
+
+    <div class="main-container">
+
+        <div id="dashboard-section" class="fade-in">
+            <div class="custom-card p-4 mb-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-3">
+                        <label class="small text-muted fw-bold mb-1">FILTER ROLE</label>
+                        <select id="roleFilter" class="form-select border-0 bg-light fw-bold">
+                            <option value="All">Show Everyone</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Student">Student</option>
+                            <option value="Chairman">Chairman</option>
+                            <option value="Staff">Staff</option>
+                        </select>
+                    </div>
+                    <div class="col-md-9">
+                        <label class="small text-muted fw-bold mb-1">CUSTOM MESSAGE (FOR INVITES/MEETINGS)</label>
+                        <div class="input-group">
+                            <span class="input-group-text border-0 bg-light"><i class="fas fa-bullhorn text-primary"></i></span>
+                            <input type="text" id="customMsg" class="form-control border-0 bg-light" placeholder="Type message here (e.g., 'Staff Meeting at 10 AM')...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="mb-3 text-secondary fw-bold">📅 Today's Actions</h5>
+            
+            <div id="actionList" class="row g-4">
+                <div class="text-center mt-5"><div class="spinner-border text-primary"></div></div>
+            </div>
+        </div>
+
+        <div id="manage-section" style="display:none;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold">🗂️ All Records</h4>
+                <div class="input-group w-50">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search name, phone...">
+                </div>
+            </div>
+            
+            <div class="custom-card p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light text-secondary">
+                            <tr>
+                                <th class="ps-4">Name</th>
+                                <th>Role</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Phone</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="import-section" style="display:none;">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="custom-card p-5 text-center">
+                        <div class="mb-4">
+                            <i class="fas fa-file-excel fa-4x text-success mb-3"></i>
+                            <h3 class="fw-bold">Import Data</h3>
+                            <p class="text-muted">Upload Excel (.xlsx) or CSV files to bulk add users.</p>
+                        </div>
+                        
+                        <div class="upload-zone mb-4" onclick="document.getElementById('excelFile').click()">
+                            <h5 id="fileNameDisplay" class="fw-bold text-primary mb-0">Click to Select File</h5>
+                            <small class="text-muted">Supports Smart Column Detection</small>
+                            <input type="file" id="excelFile" hidden accept=".csv, .xlsx, .xls">
+                        </div>
+
+                        <button id="btnImport" class="btn btn-primary btn-lg w-100 shadow-sm rounded-pill">
+                            <i class="fas fa-cloud-upload-alt me-2"></i> Start Import
+                        </button>
+
+                        <div class="mt-4 pt-3 border-top">
+                            <button id="btnDownloadSample" class="btn btn-sm btn-outline-secondary">Download Sample Format</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header border-0 bg-light">
+                    <h5 class="modal-title fw-bold">Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="editId">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">FULL NAME</label>
+                        <input type="text" id="editName" class="form-control">
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">ROLE</label>
+                            <select id="editRole" class="form-select">
+                                <option value="Student">Student</option>
+                                <option value="Teacher">Teacher</option>
+                                <option value="Chairman">Chairman</option>
+                                <option value="Staff">Staff</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">TYPE</label>
+                            <select id="editType" class="form-select">
+                                <option value="Birthday">Birthday</option>
+                                <option value="Anniversary">Anniversary</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">DATE</label>
+                        <input type="date" id="editDate" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">PHONE NUMBER</label>
+                        <input type="number" id="editPhone" class="form-control">
+                    </div>
+                    <button type="button" class="btn btn-primary w-100 fw-bold py-2" id="btnSaveEdit">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyDT7b10UXO6sbBDd_yQZ3mCHSnE3tXSahU",
+            authDomain: "birthday-wisher-app-fb8a5.firebaseapp.com",
+            databaseURL: "https://birthday-wisher-app-fb8a5-default-rtdb.firebaseio.com",
+            projectId: "birthday-wisher-app-fb8a5",
+            storageBucket: "birthday-wisher-app-fb8a5.firebasestorage.app",
+            messagingSenderId: "1097752721413",
+            appId: "1:1097752721413:web:d8d282780ff38acd53846c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let globalData = [];
+        const todayStr = new Date().toISOString().slice(0,10);
+
+        // --- NAVIGATION LOGIC ---
+        window.switchSection = (sectionId) => {
+            // Hide all sections
+            ['dashboard', 'manage', 'import'].forEach(id => {
+                document.getElementById(id + '-section').style.display = 'none';
+            });
+            // Show selected
+            document.getElementById(sectionId + '-section').style.display = 'block';
+            
+            // Highlight link
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // CLOSE SIDEBAR AUTO (The standard Bootstrap way)
+            const sidebarEl = document.getElementById('sidebarMenu');
+            const sidebar = bootstrap.Offcanvas.getInstance(sidebarEl);
+            if(sidebar) sidebar.hide();
+        }
+
+        // --- 1. DATA FETCHING ---
+        onValue(ref(db, 'events'), (snapshot) => {
+            globalData = [];
+            const data = snapshot.val();
+            if(data) {
+                Object.keys(data).forEach(key => globalData.push({id: key, ...data[key]}));
+            }
+            renderDashboard();
+            renderTable();
+        });
+
+        // --- 2. DASHBOARD & MESSAGING ---
+        function renderDashboard() {
+            const listDiv = document.getElementById('actionList');
+            const roleFilter = document.getElementById('roleFilter').value;
+            const customMsg = document.getElementById('customMsg').value.trim();
+            listDiv.innerHTML = "";
+            
+            // Filter Logic
+            let filtered = globalData.filter(item => {
+                if (roleFilter !== "All" && item.role !== roleFilter) return false;
+                
+                // If custom message is empty, only show TODAY's events
+                if (!customMsg) {
+                    const d = new Date(item.date);
+                    const t = new Date();
+                    return d.getDate() === t.getDate() && d.getMonth() === t.getMonth();
+                }
+                // If custom message is typed, show EVERYONE (for invites)
+                return true; 
+            });
+
+            if(filtered.length === 0) {
+                listDiv.innerHTML = `<div class="col-12 text-center text-muted mt-5">
+                    <i class="fas fa-mug-hot fa-3x mb-3 text-secondary"></i>
+                    <h4>No events found!</h4>
+                    <p>Try changing the filter or type a custom message to invite people.</p>
+                </div>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const isSent = item.lastSent === todayStr;
+                
+                // --- MESSAGE GENERATION ---
+                let msg = "";
+                let icon = "";
+                let borderColor = "";
+
+                if (customMsg) {
+                    msg = `*Hello ${item.name},* 👋\n\n${customMsg}\n\nRegards,\n*Admin*`;
+                    icon = '<i class="fas fa-bullhorn text-primary"></i>';
+                    borderColor = "border-invite";
+                } else if (item.type === 'Birthday') {
+                    msg = `🎂 *Happy Birthday ${item.name}!* 🥳\n\nWishing you a fantastic day filled with joy! 🎈\n\nBest Wishes,\n*Your School/Org*`;
+                    icon = '<i class="fas fa-birthday-cake text-danger"></i>';
+                    borderColor = "border-bday";
+                } else {
+                    msg = `💍 *Happy Anniversary ${item.name}!* 💖\n\nCongratulations on another year of togetherness! 🥂\n\nBest Wishes,\n*Your School/Org*`;
+                    icon = '<i class="fas fa-heart text-danger"></i>';
+                    borderColor = "border-anni";
+                }
+
+                // WhatsApp Link
+                const phone = String(item.phone).replace(/\D/g,'');
+                const cleanPhone = phone.length === 10 ? '91' + phone : phone;
+                const waLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+
+                // Card HTML
+                listDiv.innerHTML += `
+                <div class="col-md-6 col-lg-4">
+                    <div class="custom-card p-3 ${borderColor}">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge-role">${item.role}</span>
+                            <small class="text-muted fw-bold">${item.date}</small>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3 fs-3">${icon}</div>
+                            <div>
+                                <h5 class="fw-bold mb-0">${item.name}</h5>
+                                <small class="text-muted">${item.type}</small>
+                            </div>
+                        </div>
+
+                        <a href="${waLink}" target="_blank" onclick="markSent('${item.id}')" 
+                           class="btn btn-send ${isSent ? 'btn-sent-blue' : ''}">
+                           ${isSent ? '<i class="fas fa-check-double"></i> Sent Today' : '<i class="fab fa-whatsapp"></i> Send Message'}
+                        </a>
+                    </div>
+                </div>`;
+            });
+        }
+
+        window.markSent = (id) => update(ref(db, 'events/' + id), { lastSent: todayStr });
+
+        // --- 3. MANAGE TABLE & SEARCH ---
+        function renderTable() {
+            const tbody = document.getElementById('dataTableBody');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            tbody.innerHTML = "";
+
+            globalData.filter(i => 
+                i.name.toLowerCase().includes(search) || 
+                String(i.phone).includes(search)
+            ).forEach(item => {
+                tbody.innerHTML += `
+                <tr>
+                    <td class="ps-4 fw-bold">${item.name}</td>
+                    <td><span class="badge bg-light text-dark border">${item.role}</span></td>
+                    <td>${item.type}</td>
+                    <td>${item.date}</td>
+                    <td>${item.phone}</td>
+                    <td class="text-end pe-4">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="openEdit('${item.id}')"><i class="fas fa-pen"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteItem('${item.id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        // --- 4. IMPORT LOGIC (SMART & ROBUST) ---
+        document.getElementById('excelFile').addEventListener('change', function() {
+            if(this.files[0]) document.getElementById('fileNameDisplay').innerText = this.files[0].name;
+        });
+
+        document.getElementById('btnImport').addEventListener('click', () => {
+            const file = document.getElementById('excelFile').files[0];
+            if(!file) { alert("Please select a file!"); return; }
+
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(file);
+            reader.onload = (e) => {
+                const workbook = XLSX.read(e.target.result, {type:'array'});
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(sheet);
+                
+                let count = 0;
+                json.forEach(row => {
+                    // Normalize Keys (Case insensitive search)
+                    const getVal = (k) => row[Object.keys(row).find(key => key.toLowerCase().includes(k))];
+
+                    const name = getVal('name') || getVal('student');
+                    const phone = getVal('phone') || getVal('mobile') || getVal('contact');
+                    let date = getVal('date') || getVal('dob');
+                    
+                    if(name && phone) {
+                        // Date Convert (Excel Serial to YYYY-MM-DD)
+                        if(typeof date === 'number') {
+                            date = new Date((date - 25569)*86400000).toISOString().slice(0,10);
+                        }
+                        
+                        push(ref(db, 'events'), {
+                            name: name,
+                            phone: String(phone),
+                            date: date || new Date().toISOString().slice(0,10),
+                            role: getVal('role') || 'Student',
+                            type: getVal('type') || 'Birthday',
+                            lastSent: ''
+                        });
+                        count++;
+                    }
+                });
+                alert(count + " Records Imported!");
+                window.switchSection('dashboard');
+            };
+        });
+
+        // Sample Download
+        document.getElementById('btnDownloadSample').addEventListener('click', () => {
+             const ws = XLSX.utils.json_to_sheet([{ Name: "Rahul", Phone: "9988776655", Role: "Teacher", Type: "Birthday", Date: "1990-01-01" }]);
+             const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Sample");
+             XLSX.writeFile(wb, "Sample_Format.xlsx");
+        });
+
+        // --- 5. EDIT & DELETE LOGIC ---
+        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+        
+        window.openEdit = (id) => {
+            const item = globalData.find(i => i.id === id);
+            document.getElementById('editId').value = id;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editRole').value = item.role || 'Student';
+            document.getElementById('editType').value = item.type || 'Birthday';
+            document.getElementById('editDate').value = item.date;
+            document.getElementById('editPhone').value = item.phone;
+            editModal.show();
+        };
+
+        document.getElementById('btnSaveEdit').addEventListener('click', () => {
+            const id = document.getElementById('editId').value;
+            update(ref(db, 'events/'+id), {
+                name: document.getElementById('editName').value,
+                role: document.getElementById('editRole').value,
+                type: document.getElementById('editType').value,
+                date: document.getElementById('editDate').value,
+                phone: document.getElementById('editPhone').value
+            }).then(() => {
+                editModal.hide();
+            });
+        });
+
+        window.deleteItem = (id) => { if(confirm("Are you sure you want to delete this?")) remove(ref(db, 'events/'+id)); };
+
+        // Event Listeners
+        document.getElementById('roleFilter').addEventListener('change', renderDashboard);
+        document.getElementById('customMsg').addEventListener('keyup', renderDashboard);
+        document.getElementById('searchInput').addEventListener('keyup', renderTable);
+
+    </script>
+</body>
+</html>

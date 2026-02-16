@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Special Moments</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        /* Decorative Background Circles */
+        .bg-circle {
+            position: fixed; border-radius: 50%; z-index: -1; opacity: 0.6;
+            filter: blur(80px);
+        }
+        .c1 { top: -100px; left: -100px; width: 400px; height: 400px; background: #a18cd1; }
+        .c2 { bottom: -100px; right: -100px; width: 400px; height: 400px; background: #fbc2eb; }
+
+        /* Main Container */
+        .container {
+            max-width: 700px;
+            width: 100%;
+            z-index: 10;
+        }
+
+        /* Header Styling */
+        .header-box {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .main-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .date-badge {
+            background: white;
+            padding: 8px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            font-weight: 600;
+            color: #667eea;
+            display: inline-block;
+        }
+
+        /* Card Styling */
+        .event-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.5s forwards;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        /* Card Themes */
+        .theme-bday { border-left: 6px solid #ff9a9e; }
+        .theme-bday .icon-box { background: linear-gradient(45deg, #ff9a9e, #fad0c4); color: #d63384; }
+        
+        .theme-anni { border-left: 6px solid #a18cd1; }
+        .theme-anni .icon-box { background: linear-gradient(45deg, #a18cd1, #fbc2eb); color: #6f42c1; }
+
+        .icon-box {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            margin-right: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .details h4 { margin: 0; font-weight: 700; color: #2d3436; font-size: 1.3rem; }
+        .role-badge { 
+            font-size: 0.8rem; 
+            background: #eef2f3; 
+            padding: 4px 12px; 
+            border-radius: 6px; 
+            color: #636e72; 
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .wish-text {
+            font-family: 'Fredoka', cursive;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        /* Empty State */
+        .no-events {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        /* Admin Button */
+        .btn-admin {
+            position: fixed; bottom: 30px; right: 30px;
+            background: #333; color: white;
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            border: none;
+            transition: 0.3s;
+            z-index: 100;
+        }
+        .btn-admin:hover { transform: rotate(90deg) scale(1.1); background: #000; }
+
+        @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="bg-circle c1"></div>
+    <div class="bg-circle c2"></div>
+
+    <div class="container">
+        <div class="header-box">
+            <h1 class="main-title">🎉 Today's Special Moments</h1>
+            <div class="date-badge" id="currentDate">Loading Date...</div>
+        </div>
+
+        <div id="displayList">
+            <div class="text-center mt-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-muted">Checking Calendar...</p>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-admin" onclick="adminLogin()" title="Admin Login">
+        <i class="fas fa-lock"></i>
+    </button>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDT7b10UXO6sbBDd_yQZ3mCHSnE3tXSahU",
+            authDomain: "birthday-wisher-app-fb8a5.firebaseapp.com",
+            databaseURL: "https://birthday-wisher-app-fb8a5-default-rtdb.firebaseio.com",
+            projectId: "birthday-wisher-app-fb8a5",
+            storageBucket: "birthday-wisher-app-fb8a5.firebasestorage.app",
+            messagingSenderId: "1097752721413",
+            appId: "1:1097752721413:web:d8d282780ff38acd53846c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // 1. Set Date
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-US', options);
+
+        // 2. Fetch & Filter Data
+        onValue(ref(db, 'events'), (snapshot) => {
+            const listDiv = document.getElementById('displayList');
+            const data = snapshot.val();
+            listDiv.innerHTML = ""; // Clear loader
+
+            if (!data) { showEmptyState(listDiv); return; }
+
+            const today = new Date();
+            let count = 0;
+
+            // Iterate and Filter
+            Object.values(data).forEach(item => {
+                // Ensure valid data
+                if(!item.date || !item.name) return;
+
+                const d = new Date(item.date);
+                // Check Day & Month match
+                if (d.getDate() === today.getDate() && d.getMonth() === today.getMonth()) {
+                    count++;
+                    createCard(item, listDiv, count);
+                }
+            });
+
+            if(count === 0) showEmptyState(listDiv);
+        });
+
+        // 3. Helper: Create Card HTML
+        function createCard(item, container, index) {
+            const isBday = item.type === 'Birthday';
+            const themeClass = isBday ? 'theme-bday' : 'theme-anni';
+            const icon = isBday ? '<i class="fas fa-birthday-cake"></i>' : '<i class="fas fa-heart"></i>';
+            const wish = isBday ? 'Happy Birthday!' : 'Happy Anniversary!';
+            const delay = index * 0.1; // Staggered animation
+
+            const html = `
+                <div class="event-card ${themeClass}" style="animation-delay: ${delay}s">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box">${icon}</div>
+                        <div class="details">
+                            <h4>${item.name}</h4>
+                            <span class="role-badge">${item.role || 'Member'}</span>
+                        </div>
+                    </div>
+                    <div class="wish-text ${isBday ? 'text-danger' : 'text-primary'}">
+                        ${wish}
+                    </div>
+                </div>
+            `;
+            container.innerHTML += html;
+        }
+
+        function showEmptyState(container) {
+            container.innerHTML = `
+                <div class="no-events fade-in">
+                    <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="100" class="mb-3 opacity-50">
+                    <h4 class="text-muted">No special events today!</h4>
+                    <p class="text-secondary small">Check back tomorrow for more celebrations.</p>
+                </div>
+            `;
+        }
+
+        // 4. Admin Login Logic
+        window.adminLogin = function() {
+            const pass = prompt("🔐 Enter Admin Password:");
+            if(pass === "STES@1212") {
+                // Animation before redirect
+                const btn = document.querySelector('.btn-admin');
+                btn.style.transform = "scale(20)";
+                btn.style.background = "#fff";
+                setTimeout(() => {
+                    window.location.href = "admin.html";
+                }, 300);
+            } else if(pass !== null) {
+                alert("❌ Wrong Password!");
+            }
+        }
+    </script>
+</body>
+</html>
