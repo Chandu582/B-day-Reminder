@@ -1,97 +1,653 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Master Admin Panel</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        :root { 
-            --primary-grad: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        :root {
+            --bg-main: #f3f6f9;
+            --bg-card: #fff;
+            --bg-card-hover: #f8fafc;
+            --text-primary: #333;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --border-color: #e5e7eb;
             --sidebar-bg: #1e1e2d;
-            --card-hover: translateY(-5px);
+            --primary: #667eea;
+            --primary-light: #eef2ff;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            --card-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
         }
-        
-        body { background-color: #f3f6f9; font-family: 'Poppins', sans-serif; }
 
-        /* NAVBAR */
+        [data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --sidebar-bg: #0c1222;
+            --primary-light: #1e293b;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            --card-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            background: var(--bg-main);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-primary);
+            transition: background .3s, color .3s
+        }
+
         .navbar {
-            background: white;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.04);
-            padding: 12px 20px;
-            position: fixed; top: 0; width: 100%; z-index: 1040;
+            background: var(--bg-card);
+            box-shadow: var(--card-shadow);
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1040;
+            transition: background .3s
         }
-        .navbar-brand { font-weight: 700; color: #333; font-size: 1.3rem; }
-        
-        /* SIDEBAR (Offcanvas) */
-        .offcanvas { background-color: var(--sidebar-bg); color: white; width: 280px !important; }
-        .offcanvas-header { border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .nav-link { 
-            color: #a6a7b9; padding: 14px 20px; margin: 4px 10px; border-radius: 8px; 
-            font-weight: 500; transition: 0.3s; display: flex; align-items: center; gap: 12px;
-        }
-        .nav-link:hover, .nav-link.active { 
-            background: rgba(255,255,255,0.1); color: #fff; transform: translateX(5px);
-        }
-        .nav-link i { width: 20px; text-align: center; }
 
-        /* MAIN CONTENT */
-        .main-container { margin-top: 80px; padding: 20px; max-width: 1200px; margin-left: auto; margin-right: auto; }
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.2rem
+        }
 
-        /* CARDS */
+        .offcanvas {
+            background: var(--sidebar-bg);
+            color: #fff;
+            width: 270px !important
+        }
+
+        .offcanvas-header {
+            border-bottom: 1px solid rgba(255, 255, 255, .05)
+        }
+
+        .nav-link {
+            color: #a6a7b9;
+            padding: 13px 18px;
+            margin: 3px 10px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: .3s;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            cursor: pointer;
+            font-size: .9rem
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, .1);
+            color: #fff;
+            transform: translateX(5px)
+        }
+
+        .nav-link i {
+            width: 18px;
+            text-align: center
+        }
+
+        .main-container {
+            margin-top: 75px;
+            padding: 18px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        .stat-card {
+            border-radius: 14px;
+            padding: 18px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            transition: transform .3s
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px)
+        }
+
+        .stat-card .stat-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.8rem;
+            opacity: .2
+        }
+
+        .stat-card h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0
+        }
+
+        .stat-card p {
+            margin: 0;
+            opacity: .9;
+            font-size: .8rem
+        }
+
+        .stat-bg-1 {
+            background: linear-gradient(135deg, #667eea, #764ba2)
+        }
+
+        .stat-bg-2 {
+            background: linear-gradient(135deg, #f093fb, #f5576c)
+        }
+
+        .stat-bg-3 {
+            background: linear-gradient(135deg, #4facfe, #00f2fe)
+        }
+
+        .stat-bg-4 {
+            background: linear-gradient(135deg, #43e97b, #38f9d7)
+        }
+
         .custom-card {
-            background: white; border: none; border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            transition: 0.3s ease; overflow: hidden;
-            height: 100%;
+            background: var(--bg-card);
+            border: none;
+            border-radius: 14px;
+            box-shadow: var(--card-shadow);
+            transition: .3s ease;
+            overflow: hidden
         }
-        .custom-card:hover { transform: var(--card-hover); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
 
-        /* Type Indicators */
-        .border-bday { border-left: 5px solid #ff6b6b; }
-        .border-anni { border-left: 5px solid #a29bfe; }
-        .border-invite { border-left: 5px solid #0984e3; }
+        .custom-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-hover-shadow)
+        }
 
-        .badge-role { background: #eef2f7; color: #555; padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; }
+        .border-bday {
+            border-left: 5px solid #ff6b6b
+        }
 
-        /* BUTTONS */
+        .border-anni {
+            border-left: 5px solid #a29bfe
+        }
+
+        .border-invite {
+            border-left: 5px solid #0984e3
+        }
+
+        .badge-role {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 9px;
+            border-radius: 6px;
+            font-size: .75rem;
+            font-weight: 600
+        }
+
         .btn-send {
-            background: #25D366; color: white; border: none; font-weight: 600;
-            padding: 10px; width: 100%; border-radius: 8px; transition: 0.2s;
-        }
-        .btn-send:hover { background: #1ebe57; color: white; }
-        
-        .btn-sent-blue {
-            background: #3b82f6 !important; /* Blue color for sent */
-            color: white !important;
+            background: #25D366;
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            padding: 9px;
+            width: 100%;
+            border-radius: 8px;
+            transition: .2s;
+            font-size: .9rem
         }
 
-        /* UPLOAD ZONE */
-        .upload-zone {
-            border: 2px dashed #764ba2; background: #f8f9ff; border-radius: 12px;
-            padding: 40px; text-align: center; cursor: pointer; transition: 0.3s;
+        .btn-send:hover {
+            background: #1ebe57;
+            color: #fff
         }
-        .upload-zone:hover { background: #f1f1fc; border-color: #5b3cc4; }
+
+        .btn-sent-blue {
+            background: #3b82f6 !important;
+            color: #fff !important
+        }
+
+        .upload-zone {
+            border: 2px dashed #764ba2;
+            background: var(--primary-light);
+            border-radius: 12px;
+            padding: 35px;
+            text-align: center;
+            cursor: pointer;
+            transition: .3s
+        }
+
+        .upload-zone:hover {
+            background: #e8e4ff;
+            border-color: #5b3cc4
+        }
+
+        .add-form-card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: var(--card-shadow)
+        }
+
+        .form-section-title {
+            font-size: .72rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            padding-bottom: 7px;
+            border-bottom: 2px solid var(--border-color)
+        }
+
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea
+        }
+
+        .spouse-section {
+            background: var(--primary-light);
+            border: 1px dashed #a29bfe;
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 8px;
+            display: none
+        }
+
+        .spouse-section.active {
+            display: block
+        }
+
+        .toast-success {
+            position: fixed;
+            top: 75px;
+            right: 18px;
+            z-index: 9999;
+            background: #10b981;
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, .3);
+            transform: translateX(120%);
+            transition: .4s ease;
+            font-size: .9rem
+        }
+
+        .toast-success.show {
+            transform: translateX(0)
+        }
+
+        .event-toggle {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .event-toggle .form-check {
+            flex: 1;
+            min-width: 130px
+        }
+
+        .event-toggle .form-check-label {
+            display: block;
+            text-align: center;
+            padding: 9px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: .2s;
+            font-size: .9rem
+        }
+
+        .event-toggle .form-check-input:checked+.form-check-label {
+            border-color: #667eea;
+            background: var(--primary-light);
+            color: #667eea
+        }
+
+        .event-toggle .form-check-input {
+            display: none
+        }
+
+        .table {
+            color: var(--text-primary)
+        }
+
+        .table th {
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--text-secondary)
+        }
+
+        .table td {
+            color: var(--text-primary);
+            font-size: .85rem
+        }
+
+        .badge-type-bday {
+            background: #fff0f0;
+            color: #e74c3c
+        }
+
+        .badge-type-anni {
+            background: #f0f0ff;
+            color: #6c5ce7
+        }
+
+        .upcoming-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--card-shadow);
+            transition: .2s;
+            border-left: 4px solid transparent
+        }
+
+        .upcoming-card:hover {
+            transform: translateX(4px)
+        }
+
+        .upcoming-card.uc-bday {
+            border-left-color: #ff6b6b
+        }
+
+        .upcoming-card.uc-anni {
+            border-left-color: #a29bfe
+        }
+
+        .upcoming-days {
+            background: var(--primary-light);
+            color: var(--primary);
+            min-width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            line-height: 1
+        }
+
+        .upcoming-days small {
+            font-size: .5rem;
+            font-weight: 500;
+            text-transform: uppercase
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: .3s;
+            color: var(--text-primary)
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary);
+            color: var(--primary)
+        }
+
+        .bulk-progress {
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 6px;
+            display: none
+        }
+
+        .bulk-progress .bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width .3s
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px
+        }
+
+        .cal-header {
+            text-align: center;
+            font-size: .65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 6px 0
+        }
+
+        .cal-day {
+            text-align: center;
+            padding: 7px 3px;
+            border-radius: 8px;
+            font-size: .78rem;
+            background: var(--bg-card);
+            cursor: default;
+            position: relative;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .cal-day.today {
+            background: #667eea;
+            color: #fff;
+            font-weight: 700;
+            border-radius: 50%
+        }
+
+        .cal-day.has-event {
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        .cal-day .cal-dot {
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%
+        }
+
+        .cal-dot.dot-bday {
+            background: #ff6b6b
+        }
+
+        .cal-dot.dot-anni {
+            background: #a29bfe
+        }
+
+        .cal-day.empty {
+            background: transparent
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: .8rem;
+            color: #fff;
+            flex-shrink: 0
+        }
+
+        .avatar-bday {
+            background: linear-gradient(135deg, #ff6b6b, #ffa07a)
+        }
+
+        .avatar-anni {
+            background: linear-gradient(135deg, #a29bfe, #fd79a8)
+        }
+
+        .avatar-default {
+            background: linear-gradient(135deg, #667eea, #764ba2)
+        }
+
+        .tag {
+            font-size: .6rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase
+        }
+
+        .tag-vip {
+            background: #fef3c7;
+            color: #d97706
+        }
+
+        .tag-new {
+            background: #d1fae5;
+            color: #059669
+        }
+
+        .tag-special {
+            background: #ede9fe;
+            color: #7c3aed
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: var(--card-shadow)
+        }
+
+        .chart-bar {
+            height: 20px;
+            border-radius: 6px;
+            transition: width .6s ease;
+            min-width: 2px
+        }
+
+        .quick-add-card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: var(--card-shadow);
+            border: 2px dashed var(--border-color)
+        }
+
+        .group-msg-box {
+            background: var(--primary-light);
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 10px;
+            font-size: .85rem;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word
+        }
+
+        .log-entry {
+            padding: 8px 12px;
+            border-left: 3px solid var(--primary);
+            background: var(--bg-card);
+            margin-bottom: 6px;
+            border-radius: 0 8px 8px 0;
+            font-size: .8rem;
+            box-shadow: var(--card-shadow)
+        }
+
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select {
+            background-color: #334155;
+            border-color: #475569;
+            color: #f1f5f9
+        }
+
+        [data-theme="dark"] .form-control::placeholder {
+            color: #64748b
+        }
+
+        [data-theme="dark"] .table {
+            --bs-table-bg: transparent
+        }
+
+        [data-theme="dark"] .bg-light {
+            background-color: #334155 !important
+        }
+
+        [data-theme="dark"] .badge.bg-light {
+            background-color: #475569 !important;
+            color: #e2e8f0 !important
+        }
+
+        [data-theme="dark"] .modal-content {
+            background: #1e293b;
+            color: #f1f5f9
+        }
+
+        [data-theme="dark"] .upload-zone {
+            background: #1e293b
+        }
+
+        [data-theme="dark"] .btn-close {
+            filter: invert(1)
+        }
     </style>
 </head>
+
 <body>
+
+    <div class="toast-success" id="toastNotif">
+        <i class="fas fa-check-circle me-2"></i><span id="toastMsg">Success!</span>
+    </div>
 
     <nav class="navbar">
         <div class="container-fluid">
             <div class="d-flex align-items-center">
-                <button class="btn border-0 me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
-                    <i class="fas fa-bars fa-lg text-dark"></i>
+                <button class="btn border-0 me-2" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#sidebarMenu">
+                    <i class="fas fa-bars fa-lg" style="color:var(--text-primary)"></i>
                 </button>
                 <span class="navbar-brand"><i class="fas fa-crown text-warning me-2"></i>Admin Panel</span>
             </div>
-            <button onclick="location.reload()" class="btn btn-light btn-sm fw-bold text-primary rounded-pill px-3">
-                <i class="fas fa-sync-alt me-1"></i> Refresh
-            </button>
+            <div class="d-flex align-items-center gap-2">
+                <button class="theme-toggle" onclick="toggleDarkMode()" title="Dark Mode" id="themeBtn">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                <button onclick="location.reload()" class="btn btn-light btn-sm fw-bold rounded-pill px-3"
+                    style="color:var(--primary)">
+                    <i class="fas fa-sync-alt me-1"></i> Refresh
+                </button>
+                <button onclick="if(confirm('Logout?')) window.location.href='index.html'" class="btn btn-sm btn-outline-danger fw-bold rounded-pill px-3">
+                    <i class="fas fa-sign-out-alt me-1"></i> Logout
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -102,74 +658,261 @@
         </div>
         <div class="offcanvas-body p-0 pt-2">
             <nav class="nav flex-column">
-                <a class="nav-link active" onclick="switchSection('dashboard')">
-                    <i class="fas fa-paper-plane"></i> Dashboard & Send
-                </a>
-                <a class="nav-link" onclick="switchSection('manage')">
-                    <i class="fas fa-database"></i> Manage Database
-                </a>
-                <a class="nav-link" onclick="switchSection('import')">
-                    <i class="fas fa-file-csv"></i> Import Excel
-                </a>
+                <a class="nav-link active" onclick="switchSection('dashboard')"><i class="fas fa-paper-plane"></i>
+                    Dashboard</a>
+                <a class="nav-link" onclick="switchSection('addmember')"><i class="fas fa-user-plus"></i> Add Member</a>
+                <a class="nav-link" onclick="switchSection('manage')"><i class="fas fa-database"></i> Manage
+                    Database</a>
+                <a class="nav-link" onclick="switchSection('calendar')"><i class="fas fa-calendar-alt"></i> Calendar</a>
+                <a class="nav-link" onclick="switchSection('analytics')"><i class="fas fa-chart-bar"></i> Analytics</a>
+                <a class="nav-link" onclick="switchSection('logs')"><i class="fas fa-history"></i> Message Log</a>
+                <a class="nav-link" onclick="switchSection('import')"><i class="fas fa-file-csv"></i> Import Excel</a>
+                <a class="nav-link" onclick="switchSection('settings')"><i class="fas fa-cog"></i> Settings</a>
             </nav>
         </div>
         <div class="p-3 border-top border-secondary">
-            <small class="text-muted d-block text-center">Version 2.0 Pro</small>
+            <small class="text-muted d-block text-center">Version 4.0 Pro</small>
         </div>
     </div>
 
     <div class="main-container">
 
+        <!-- ===== DASHBOARD ===== -->
         <div id="dashboard-section" class="fade-in">
-            <div class="custom-card p-4 mb-4">
-                <div class="row g-3 align-items-center">
-                    <div class="col-md-3">
-                        <label class="small text-muted fw-bold mb-1">FILTER ROLE</label>
-                        <select id="roleFilter" class="form-select border-0 bg-light fw-bold">
-                            <option value="All">Show Everyone</option>
-                            <option value="Teacher">Teacher</option>
-                            <option value="Student">Student</option>
-                            <option value="Chairman">Chairman</option>
-                            <option value="Staff">Staff</option>
-                        </select>
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card stat-bg-1">
+                        <h2 id="statTotal">0</h2>
+                        <p>Total Members</p>
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
                     </div>
-                    <div class="col-md-9">
-                        <label class="small text-muted fw-bold mb-1">CUSTOM MESSAGE (FOR INVITES/MEETINGS)</label>
-                        <div class="input-group">
-                            <span class="input-group-text border-0 bg-light"><i class="fas fa-bullhorn text-primary"></i></span>
-                            <input type="text" id="customMsg" class="form-control border-0 bg-light" placeholder="Type message here (e.g., 'Staff Meeting at 10 AM')...">
-                        </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card stat-bg-2">
+                        <h2 id="statToday">0</h2>
+                        <p>Today's Events</p>
+                        <div class="stat-icon"><i class="fas fa-birthday-cake"></i></div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card stat-bg-3">
+                        <h2 id="statMonth">0</h2>
+                        <p>This Month</p>
+                        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card stat-bg-4">
+                        <h2 id="statUpcoming">0</h2>
+                        <p>Next 7 Days</p>
+                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
                     </div>
                 </div>
             </div>
 
-            <h5 class="mb-3 text-secondary fw-bold">📅 Today's Actions</h5>
-            
-            <div id="actionList" class="row g-4">
-                <div class="text-center mt-5"><div class="spinner-border text-primary"></div></div>
+            <div class="custom-card p-3 mb-4">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-2">
+                        <label class="small fw-bold mb-1" style="color:var(--text-muted);font-size:.7rem">FILTER
+                            ROLE</label>
+                        <select id="roleFilter" class="form-select form-select-sm border-0 fw-bold"
+                            style="background:var(--primary-light);color:var(--text-primary)">
+                            <option value="All">Everyone</option>
+                            <option value="Member">Member</option>
+                            <option value="Executive Member">Executive Member</option>
+                            <option value="Governing Body Member">Governing Body</option>
+                            <option value="Patron">Patron</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="small fw-bold mb-1" style="color:var(--text-muted);font-size:.7rem">CUSTOM
+                            MESSAGE</label>
+                        <input type="text" id="customMsg" class="form-control form-control-sm border-0"
+                            style="background:var(--primary-light)" placeholder="Type invite/meeting message...">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="small fw-bold mb-1" style="color:var(--text-muted);font-size:.7rem">MSG
+                            STYLE</label>
+                        <select id="templateSelect" class="form-select form-select-sm border-0 fw-bold"
+                            style="background:var(--primary-light);color:var(--text-primary)">
+                            <option value="formal">🎩 Formal</option>
+                            <option value="friendly" selected>🤗 Friendly</option>
+                            <option value="festive">🎊 Festive</option>
+                            <option value="short">⚡ Short</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex gap-2 pt-3">
+                        <button class="btn btn-sm btn-outline-success rounded-pill flex-fill"
+                            onclick="exportToExcel()"><i class="fas fa-download me-1"></i>Export</button>
+                        <button class="btn btn-sm rounded-pill flex-fill text-white"
+                            style="background:linear-gradient(135deg,#667eea,#764ba2)" onclick="bulkSend()"><i
+                                class="fas fa-paper-plane me-1"></i>Bulk Send</button>
+                        <button class="btn btn-sm btn-outline-info rounded-pill" onclick="copyGroupMsg()"
+                            title="Copy Group Message"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="bulk-progress" id="bulkProgress">
+                <div class="bar" id="bulkBar"></div>
+            </div>
+
+            <!-- Group Message Box (hidden by default) -->
+            <div id="groupMsgBox" class="group-msg-box mb-3" style="display:none"></div>
+
+            <h6 class="mb-3 fw-bold" style="color:var(--text-secondary)">📅 Today's Actions</h6>
+            <div id="actionList" class="row g-3">
+                <div class="text-center mt-4">
+                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                </div>
+            </div>
+
+            <!-- Quick Add -->
+            <div class="quick-add-card mt-4">
+                <h6 class="fw-bold mb-3" style="color:var(--text-secondary)"><i
+                        class="fas fa-bolt me-1 text-warning"></i>Quick Add Member</h6>
+                <div class="row g-2 align-items-end">
+                    <div class="col"><input type="text" id="qaName" class="form-control form-control-sm"
+                            placeholder="Name"></div>
+                    <div class="col"><input type="text" id="qaPhone" class="form-control form-control-sm"
+                            placeholder="Phone"></div>
+                    <div class="col"><input type="date" id="qaBday" class="form-control form-control-sm"
+                            title="Birthday"></div>
+                    <div class="col-auto"><button class="btn btn-sm text-white" style="background:var(--primary)"
+                            onclick="quickAdd()"><i class="fas fa-plus"></i></button></div>
+                </div>
+            </div>
+
+            <!-- Upcoming -->
+            <div class="mt-4">
+                <h6 class="mb-2 fw-bold" style="color:var(--text-secondary)">🔮 Upcoming 7 Days</h6>
+                <div id="upcomingList"></div>
             </div>
         </div>
 
-        <div id="manage-section" style="display:none;">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="fw-bold">🗂️ All Records</h4>
-                <div class="input-group w-50">
-                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                    <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search name, phone...">
+        <!-- ===== ADD MEMBER ===== -->
+        <div id="addmember-section" style="display:none;">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="add-form-card">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-user-plus fa-2x mb-2" style="color:var(--primary)"></i>
+                            <h4 class="fw-bold">Add New Member</h4>
+                        </div>
+                        <div id="duplicateWarning" class="alert alert-warning d-none mb-3 py-2"
+                            style="font-size:.85rem">
+                            <i class="fas fa-exclamation-triangle me-1"></i><span id="duplicateMsg"></span>
+                        </div>
+                        <div class="form-section-title"><i class="fas fa-user me-1"></i> Personal Info</div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold"
+                                    style="color:var(--text-muted);font-size:.72rem">FULL NAME *</label>
+                                <input type="text" id="addName" class="form-control form-control-sm"
+                                    placeholder="e.g. Rajesh Kumar" oninput="checkDuplicate()">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold"
+                                    style="color:var(--text-muted);font-size:.72rem">PHONE *</label>
+                                <input type="text" id="addPhone" class="form-control form-control-sm"
+                                    placeholder="e.g. 9876543210" oninput="checkDuplicate()">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold"
+                                    style="color:var(--text-muted);font-size:.72rem">ROLE *</label>
+                                <select id="addRole" class="form-select form-select-sm">
+                                    <option value="Member">Member</option>
+                                    <option value="Executive Member">Executive Member</option>
+                                    <option value="Governing Body Member">Governing Body Member</option>
+                                    <option value="Patron">Patron</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold"
+                                    style="color:var(--text-muted);font-size:.72rem">TAG</label>
+                                <select id="addTag" class="form-select form-select-sm">
+                                    <option value="">None</option>
+                                    <option value="VIP">⭐ VIP</option>
+                                    <option value="New">🆕 New</option>
+                                    <option value="Special">💎 Special</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-section-title"><i class="fas fa-calendar-alt me-1"></i> Events</div>
+                        <div class="event-toggle mb-3">
+                            <div class="form-check"><input class="form-check-input" type="checkbox" id="chkBirthday"
+                                    checked><label class="form-check-label" for="chkBirthday"><i
+                                        class="fas fa-birthday-cake me-1"></i> Birthday</label></div>
+                            <div class="form-check"><input class="form-check-input" type="checkbox"
+                                    id="chkAnniversary"><label class="form-check-label" for="chkAnniversary"><i
+                                        class="fas fa-heart me-1"></i> Anniversary</label></div>
+                        </div>
+                        <div id="bdayDateSection" class="mb-2">
+                            <label class="form-label small fw-bold"
+                                style="color:var(--text-muted);font-size:.72rem">BIRTHDAY DATE</label>
+                            <input type="date" id="addBdayDate" class="form-control form-control-sm">
+                        </div>
+                        <div id="anniSection" class="spouse-section">
+                            <div class="row g-2">
+                                <div class="col-md-6"><label class="form-label small fw-bold"
+                                        style="color:var(--text-muted);font-size:.72rem">ANNIVERSARY DATE</label><input
+                                        type="date" id="addAnniDate" class="form-control form-control-sm"></div>
+                                <div class="col-md-6"><label class="form-label small fw-bold"
+                                        style="color:var(--text-muted);font-size:.72rem">SPOUSE NAME *</label><input
+                                        type="text" id="addSpouseName" class="form-control form-control-sm"
+                                        placeholder="e.g. Priya Kumar"></div>
+                            </div>
+                        </div>
+                        <button class="btn w-100 fw-bold py-2 mt-3 text-white"
+                            style="background:linear-gradient(135deg,#667eea,#764ba2)" id="btnAddMember"><i
+                                class="fas fa-plus-circle me-2"></i>Add Member</button>
+                    </div>
                 </div>
             </div>
-            
+        </div>
+
+        <!-- ===== MANAGE ===== -->
+        <div id="manage-section" style="display:none;">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h5 class="fw-bold mb-0">🗂️ All Records <span class="badge rounded-pill"
+                        style="background:var(--primary);font-size:.65rem" id="totalBadge">0</span></h5>
+                <div class="d-flex gap-2 align-items-center flex-wrap">
+                    <select id="manageRoleFilter" class="form-select form-select-sm" style="width:auto">
+                        <option value="All">All Roles</option>
+                        <option value="Member">Member</option>
+                        <option value="Executive Member">Executive</option>
+                        <option value="Governing Body Member">Governing Body</option>
+                        <option value="Patron">Patron</option>
+                    </select>
+                    <select id="manageEventFilter" class="form-select form-select-sm" style="width:auto">
+                        <option value="All">All Events</option>
+                        <option value="Birthday">Has Birthday</option>
+                        <option value="Anniversary">Has Anniversary</option>
+                        <option value="Both">Has Both</option>
+                    </select>
+                    <div class="input-group input-group-sm" style="max-width:220px;">
+                        <span class="input-group-text border-end-0" style="background:var(--bg-card)"><i
+                                class="fas fa-search" style="color:var(--text-muted)"></i></span>
+                        <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search..."
+                            style="background:var(--bg-card)">
+                    </div>
+                    <button class="btn btn-sm btn-outline-success rounded-pill" onclick="exportToExcel()"><i
+                            class="fas fa-file-excel"></i></button>
+                </div>
+            </div>
             <div class="custom-card p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light text-secondary">
+                        <thead style="background:var(--primary-light)">
                             <tr>
-                                <th class="ps-4">Name</th>
+                                <th class="ps-3">Member</th>
                                 <th>Role</th>
-                                <th>Type</th>
-                                <th>Date</th>
+                                <th>Tag</th>
+                                <th>Events</th>
+                                <th>Birthday</th>
+                                <th>Anniversary</th>
+                                <th>Spouse</th>
                                 <th>Phone</th>
-                                <th class="text-end pe-4">Actions</th>
+                                <th class="text-end pe-3">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="dataTableBody"></tbody>
@@ -178,77 +921,197 @@
             </div>
         </div>
 
+        <!-- ===== CALENDAR ===== -->
+        <div id="calendar-section" style="display:none;">
+            <div class="custom-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="changeMonth(-1)"><i
+                            class="fas fa-chevron-left"></i></button>
+                    <h5 class="fw-bold mb-0" id="calMonthTitle"></h5>
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="changeMonth(1)"><i
+                            class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="d-flex gap-3 mb-2 justify-content-center"><span class="small"><span
+                            style="display:inline-block;width:8px;height:8px;background:#ff6b6b;border-radius:50%"></span>
+                        Birthday</span><span class="small"><span
+                            style="display:inline-block;width:8px;height:8px;background:#a29bfe;border-radius:50%"></span>
+                        Anniversary</span></div>
+                <div class="cal-grid" id="calendarGrid"></div>
+                <div id="calEventsList" class="mt-3"></div>
+            </div>
+        </div>
+
+        <!-- ===== ANALYTICS ===== -->
+        <div id="analytics-section" style="display:none;">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <h6 class="fw-bold mb-3"><i class="fas fa-chart-bar me-1 text-primary"></i> Birthdays per Month
+                        </h6>
+                        <div id="bdayChart"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <h6 class="fw-bold mb-3"><i class="fas fa-chart-bar me-1 text-purple"></i> Anniversaries per
+                            Month</h6>
+                        <div id="anniChart"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <h6 class="fw-bold mb-3"><i class="fas fa-users me-1 text-success"></i> Members by Role</h6>
+                        <div id="roleChart"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <h6 class="fw-bold mb-3"><i class="fas fa-tags me-1 text-warning"></i> Members by Tag</h6>
+                        <div id="tagChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MESSAGE LOG ===== -->
+        <div id="logs-section" style="display:none;">
+            <h5 class="fw-bold mb-3"><i class="fas fa-history me-1"></i> Message History</h5>
+            <div id="logList">
+                <p style="color:var(--text-muted)">Loading...</p>
+            </div>
+        </div>
+
+        <!-- ===== IMPORT ===== -->
         <div id="import-section" style="display:none;">
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <div class="custom-card p-5 text-center">
-                        <div class="mb-4">
-                            <i class="fas fa-file-excel fa-4x text-success mb-3"></i>
-                            <h3 class="fw-bold">Import Data</h3>
-                            <p class="text-muted">Upload Excel (.xlsx) or CSV files to bulk add users.</p>
+                    <div class="custom-card p-4 text-center">
+                        <i class="fas fa-file-excel fa-3x text-success mb-3"></i>
+                        <h4 class="fw-bold">Import Data</h4>
+                        <p style="color:var(--text-muted)" class="small">Upload Excel/CSV to bulk add members</p>
+                        <div class="upload-zone mb-3" onclick="document.getElementById('excelFile').click()">
+                            <h6 id="fileNameDisplay" class="fw-bold mb-0" style="color:var(--primary)">Click to Select
+                                File</h6>
+                            <small style="color:var(--text-muted)">Smart Column Detection</small>
+                            <input type="file" id="excelFile" hidden accept=".csv,.xlsx,.xls">
                         </div>
-                        
-                        <div class="upload-zone mb-4" onclick="document.getElementById('excelFile').click()">
-                            <h5 id="fileNameDisplay" class="fw-bold text-primary mb-0">Click to Select File</h5>
-                            <small class="text-muted">Supports Smart Column Detection</small>
-                            <input type="file" id="excelFile" hidden accept=".csv, .xlsx, .xls">
+                        <div id="importPreview" class="mb-3" style="display:none">
+                            <div class="alert alert-info text-start py-2">
+                                <h6 class="fw-bold small"><i class="fas fa-eye me-1"></i>Preview</h6>
+                                <div id="previewContent" class="small"></div>
+                            </div>
                         </div>
-
-                        <button id="btnImport" class="btn btn-primary btn-lg w-100 shadow-sm rounded-pill">
-                            <i class="fas fa-cloud-upload-alt me-2"></i> Start Import
-                        </button>
-
-                        <div class="mt-4 pt-3 border-top">
-                            <button id="btnDownloadSample" class="btn btn-sm btn-outline-secondary">Download Sample Format</button>
+                        <button id="btnImport" class="btn btn-primary w-100 rounded-pill"><i
+                                class="fas fa-cloud-upload-alt me-2"></i>Import</button>
+                        <div class="mt-3 pt-2 border-top">
+                            <p class="small mb-1" style="color:var(--text-muted)"><strong>Columns:</strong> Name, Phone,
+                                Role, Tag, BirthdayDate, AnniversaryDate, SpouseName</p>
+                            <button id="btnDownloadSample" class="btn btn-sm btn-outline-secondary">Sample
+                                Format</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- ===== SETTINGS ===== -->
+        <div id="settings-section" style="display:none;">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="custom-card p-4">
+                        <h5 class="fw-bold mb-4"><i class="fas fa-cog me-2"></i>Settings</h5>
+
+                        <div class="form-section-title"><i class="fas fa-lock me-1"></i> Change Password</div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold" style="color:var(--text-muted);font-size:.72rem">CURRENT PASSWORD</label>
+                            <input type="password" id="settOldPass" class="form-control form-control-sm" placeholder="Enter current password">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold" style="color:var(--text-muted);font-size:.72rem">NEW PASSWORD</label>
+                            <input type="password" id="settNewPass" class="form-control form-control-sm" placeholder="Enter new password">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold" style="color:var(--text-muted);font-size:.72rem">CONFIRM PASSWORD</label>
+                            <input type="password" id="settConfirmPass" class="form-control form-control-sm" placeholder="Confirm new password">
+                        </div>
+                        <button class="btn btn-sm btn-primary w-100 rounded-pill mb-4" onclick="changePassword()"><i class="fas fa-key me-1"></i> Update Password</button>
+
+                        <div class="form-section-title"><i class="fas fa-bell me-1"></i> Browser Notifications</div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="small">Enable daily reminders</span>
+                            <button class="btn btn-sm btn-outline-primary rounded-pill"
+                                onclick="enableNotifications()"><i class="fas fa-bell me-1"></i> Enable</button>
+                        </div>
+
+                        <div class="form-section-title"><i class="fas fa-building me-1"></i> Organization Name</div>
+                        <div class="mb-3">
+                            <input type="text" id="settOrgName" class="form-control form-control-sm"
+                                placeholder="e.g. KERALA ASSOCIATION, BIHAR">
+                            <button class="btn btn-sm btn-outline-secondary w-100 mt-2 rounded-pill"
+                                onclick="saveOrgName()"><i class="fas fa-save me-1"></i> Save</button>
+                        </div>
+
+                        <div class="form-section-title mt-3"><i class="fas fa-database me-1"></i> Data</div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-success flex-fill rounded-pill"
+                                onclick="exportToExcel()"><i class="fas fa-download me-1"></i> Export All</button>
+                            <button class="btn btn-sm btn-outline-danger flex-fill rounded-pill"
+                                onclick="if(confirm('⚠️ Delete ALL members? This cannot be undone!'))clearAll()"><i
+                                    class="fas fa-trash me-1"></i> Clear All</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- EDIT MODAL -->
     <div class="modal fade" id="editModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header border-0 bg-light">
-                    <h5 class="modal-title fw-bold">Edit User</h5>
+                <div class="modal-header border-0 py-2" style="background:var(--primary-light)">
+                    <h6 class="modal-title fw-bold">Edit Member</h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body p-4">
+                <div class="modal-body p-3">
                     <input type="hidden" id="editId">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">FULL NAME</label>
-                        <input type="text" id="editName" class="form-control">
+                    <div class="row g-2">
+                        <div class="col-md-6"><label class="form-label small fw-bold"
+                                style="color:var(--text-muted);font-size:.7rem">NAME</label><input type="text"
+                                id="editName" class="form-control form-control-sm"></div>
+                        <div class="col-md-6"><label class="form-label small fw-bold"
+                                style="color:var(--text-muted);font-size:.7rem">PHONE</label><input type="text"
+                                id="editPhone" class="form-control form-control-sm"></div>
+                        <div class="col-md-4"><label class="form-label small fw-bold"
+                                style="color:var(--text-muted);font-size:.7rem">ROLE</label><select id="editRole"
+                                class="form-select form-select-sm">
+                                <option value="Member">Member</option>
+                                <option value="Executive Member">Executive Member</option>
+                                <option value="Governing Body Member">Governing Body Member</option>
+                                <option value="Patron">Patron</option>
+                            </select></div>
+                        <div class="col-md-4"><label class="form-label small fw-bold"
+                                style="color:var(--text-muted);font-size:.7rem">TAG</label><select id="editTag"
+                                class="form-select form-select-sm">
+                                <option value="">None</option>
+                                <option value="VIP">⭐ VIP</option>
+                                <option value="New">🆕 New</option>
+                                <option value="Special">💎 Special</option>
+                            </select></div>
+                        <div class="col-md-4"><label class="form-label small fw-bold"
+                                style="color:var(--text-muted);font-size:.7rem">BIRTHDAY</label><input type="date"
+                                id="editBdayDate" class="form-control form-control-sm"></div>
+                        <div class="col-md-6"><label class="form-label small fw-bold"
+                                style="color:var(--text-muted);font-size:.7rem">ANNIVERSARY</label><input type="date"
+                                id="editAnniDate" class="form-control form-control-sm"></div>
+                        <div class="col-md-6"><label class="form-label small fw-bold"
+                                style="color:var(--text-muted);font-size:.7rem">SPOUSE</label><input type="text"
+                                id="editSpouseName" class="form-control form-control-sm"
+                                placeholder="Required if anniversary set"></div>
                     </div>
-                    <div class="row">
-                        <div class="col-6 mb-3">
-                            <label class="form-label small fw-bold text-muted">ROLE</label>
-                            <select id="editRole" class="form-select">
-                                <option value="Student">Student</option>
-                                <option value="Teacher">Teacher</option>
-                                <option value="Chairman">Chairman</option>
-                                <option value="Staff">Staff</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="col-6 mb-3">
-                            <label class="form-label small fw-bold text-muted">TYPE</label>
-                            <select id="editType" class="form-select">
-                                <option value="Birthday">Birthday</option>
-                                <option value="Anniversary">Anniversary</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">DATE</label>
-                        <input type="date" id="editDate" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">PHONE NUMBER</label>
-                        <input type="number" id="editPhone" class="form-control">
-                    </div>
-                    <button type="button" class="btn btn-primary w-100 fw-bold py-2" id="btnSaveEdit">Save Changes</button>
+                    <button type="button" class="btn w-100 fw-bold py-2 mt-3 text-white"
+                        style="background:linear-gradient(135deg,#667eea,#764ba2)" id="btnSaveEdit"><i
+                            class="fas fa-save me-2"></i>Save</button>
                 </div>
             </div>
         </div>
@@ -258,9 +1121,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyDT7b10UXO6sbBDd_yQZ3mCHSnE3tXSahU",
             authDomain: "birthday-wisher-app-fb8a5.firebaseapp.com",
@@ -273,249 +1135,428 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-
         let globalData = [];
-        const todayStr = new Date().toISOString().slice(0,10);
+        let logData = [];
+        const todayStr = new Date().toISOString().slice(0, 10);
+        let calYear = new Date().getFullYear();
+        let calMonth = new Date().getMonth();
 
-        // --- NAVIGATION LOGIC ---
-        window.switchSection = (sectionId) => {
-            // Hide all sections
-            ['dashboard', 'manage', 'import'].forEach(id => {
-                document.getElementById(id + '-section').style.display = 'none';
-            });
-            // Show selected
-            document.getElementById(sectionId + '-section').style.display = 'block';
-            
-            // Highlight link
+        // ORG NAME
+        function getOrgName() { return localStorage.getItem('orgName') || 'KERALA ASSOCIATION, BIHAR'; }
+        document.getElementById('settOrgName').value = getOrgName();
+        window.saveOrgName = () => { localStorage.setItem('orgName', document.getElementById('settOrgName').value.trim()); showToast('✅ Org name saved!'); };
+
+        // TEMPLATES
+        const T = {
+            birthday: {
+                formal: n => `🏛️ *${getOrgName()}*\n\n🎂 *Respected ${n},*\n\nOn behalf of our organization, warmest birthday wishes to you. May this year bring prosperity and success.\n\nBest Regards,\n*KAB Family* 🏫`,
+                friendly: n => `🏛️ *${getOrgName()}*\n\n✨🎂 *Happy Birthday ${n}!* 🥳✨\n\n"May this special day bring you endless joy, success, and precious memories!" 🌟\n\nWishing you a fantastic year ahead! 🎈\n\nWarm Regards,\n*KAB Family* 🏫`,
+                festive: n => `🏛️ *${getOrgName()}*\n\n🎉🎊🎂 *HAPPY BIRTHDAY ${n.toUpperCase()}!* 🎂🎊🎉\n\n🌟 May your day sparkle with joy! 🌟\n🎁 May your wishes all come true! 🎁\n🎈 May this year be your BEST! 🎈\n\nCheers,\n*KAB Family* 🏫🎉`,
+                short: n => `🏛️ *${getOrgName()}*\n\n🎂 *Happy Birthday ${n}!* 🎉\nWishing you joy & happiness!\n\n— *KAB Family* 🏫`
+            },
+            anniversary: {
+                formal: c => `🏛️ *${getOrgName()}*\n\n💍 *Respected ${c},*\n\nHeartiest congratulations on your wedding anniversary. May your bond continue to grow stronger.\n\nWarm Regards,\n*KAB Family* 🏫`,
+                friendly: c => `🏛️ *${getOrgName()}*\n\n💖💍 *Happy Anniversary ${c}!* 🥂\n\n"Wishing you both another wonderful year of togetherness!" ✨\n\nMay your journey be filled with love & beautiful memories! 🌸\n\nBest Wishes,\n*KAB Family* 🏫`,
+                festive: c => `🏛️ *${getOrgName()}*\n\n🎊💖💍🎊\n*HAPPY ANNIVERSARY*\n*${c}!* 🥂✨\n\n💕 Today we celebrate YOUR love story! 💕\n🎉 Cheers to many more years! 🎉\n\nWith Love,\n*KAB Family* 🏫🎊`,
+                short: c => `🏛️ *${getOrgName()}*\n\n💍 *Happy Anniversary ${c}!* 💖\nWishing you endless love!\n\n— *KAB Family* 🏫`
+            }
+        };
+
+        // TOAST
+        function showToast(m) { const t = document.getElementById('toastNotif'); document.getElementById('toastMsg').textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); }
+
+        // DARK MODE
+        window.toggleDarkMode = () => { const h = document.documentElement; const d = h.getAttribute('data-theme') === 'dark'; h.setAttribute('data-theme', d ? 'light' : 'dark'); document.getElementById('themeIcon').className = d ? 'fas fa-moon' : 'fas fa-sun'; localStorage.setItem('theme', d ? 'light' : 'dark'); };
+        if (localStorage.getItem('theme') === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('themeIcon').className = 'fas fa-sun'; }
+
+        // NAV
+        window.switchSection = (id) => {
+            ['dashboard', 'addmember', 'manage', 'calendar', 'analytics', 'logs', 'import', 'settings'].forEach(s => document.getElementById(s + '-section').style.display = 'none');
+            document.getElementById(id + '-section').style.display = 'block';
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             event.currentTarget.classList.add('active');
+            const sb = document.getElementById('sidebarMenu'); const s = bootstrap.Offcanvas.getInstance(sb); if (s) s.hide();
+            if (id === 'calendar') renderCalendar();
+            if (id === 'analytics') renderAnalytics();
+            if (id === 'logs') renderLogs();
+        };
 
-            // CLOSE SIDEBAR AUTO (The standard Bootstrap way)
-            const sidebarEl = document.getElementById('sidebarMenu');
-            const sidebar = bootstrap.Offcanvas.getInstance(sidebarEl);
-            if(sidebar) sidebar.hide();
-        }
+        // TOGGLES
+        document.getElementById('chkAnniversary').addEventListener('change', function () { document.getElementById('anniSection').classList.toggle('active', this.checked); });
+        document.getElementById('chkBirthday').addEventListener('change', function () { document.getElementById('bdayDateSection').style.display = this.checked ? 'block' : 'none'; });
 
-        // --- 1. DATA FETCHING ---
-        onValue(ref(db, 'events'), (snapshot) => {
-            globalData = [];
-            const data = snapshot.val();
-            if(data) {
-                Object.keys(data).forEach(key => globalData.push({id: key, ...data[key]}));
-            }
-            renderDashboard();
-            renderTable();
+        // DUPLICATE CHECK
+        window.checkDuplicate = () => {
+            const n = document.getElementById('addName').value.trim().toLowerCase();
+            const p = document.getElementById('addPhone').value.trim();
+            const w = document.getElementById('duplicateWarning');
+            const m = document.getElementById('duplicateMsg');
+            if (!n && !p) { w.classList.add('d-none'); return; }
+            const d = globalData.find(x => (n && x.name.toLowerCase() === n) || (p.length >= 10 && String(x.phone) === p));
+            if (d) { w.classList.remove('d-none'); m.textContent = `Similar: "${d.name}" (${d.phone})`; } else { w.classList.add('d-none'); }
+        };
+
+        // ADD MEMBER
+        document.getElementById('btnAddMember').addEventListener('click', () => {
+            const name = document.getElementById('addName').value.trim();
+            const phone = document.getElementById('addPhone').value.trim();
+            const role = document.getElementById('addRole').value;
+            const tag = document.getElementById('addTag').value;
+            const hasBday = document.getElementById('chkBirthday').checked;
+            const hasAnni = document.getElementById('chkAnniversary').checked;
+            const bdayDate = document.getElementById('addBdayDate').value;
+            const anniDate = document.getElementById('addAnniDate').value;
+            const spouse = document.getElementById('addSpouseName').value.trim();
+            if (!name || !phone) { alert("⚠️ Name & Phone required!"); return; }
+            if (!hasBday && !hasAnni) { alert("⚠️ Select Birthday or Anniversary!"); return; }
+            if (hasBday && !bdayDate) { alert("⚠️ Enter Birthday Date!"); return; }
+            if (hasAnni && !anniDate) { alert("⚠️ Enter Anniversary Date!"); return; }
+            if (hasAnni && !spouse) { alert("⚠️ Enter Spouse Name!"); return; }
+            push(ref(db, 'members'), { name, phone: String(phone), role, tag: tag || '', birthdayDate: hasBday ? bdayDate : '', anniversaryDate: hasAnni ? anniDate : '', spouseName: hasAnni ? spouse : '', lastSentBday: '', lastSentAnni: '' }).then(() => {
+                showToast(`✅ ${name} added!`);
+                ['addName', 'addPhone', 'addBdayDate', 'addAnniDate', 'addSpouseName'].forEach(i => document.getElementById(i).value = '');
+                document.getElementById('chkBirthday').checked = true; document.getElementById('chkAnniversary').checked = false;
+                document.getElementById('anniSection').classList.remove('active'); document.getElementById('bdayDateSection').style.display = 'block';
+                document.getElementById('duplicateWarning').classList.add('d-none'); document.getElementById('addTag').value = '';
+            });
         });
 
-        // --- 2. DASHBOARD & MESSAGING ---
-        function renderDashboard() {
-            const listDiv = document.getElementById('actionList');
-            const roleFilter = document.getElementById('roleFilter').value;
-            const customMsg = document.getElementById('customMsg').value.trim();
-            listDiv.innerHTML = "";
-            
-            // Filter Logic
-            let filtered = globalData.filter(item => {
-                if (roleFilter !== "All" && item.role !== roleFilter) return false;
-                
-                // If custom message is empty, only show TODAY's events
-                if (!customMsg) {
-                    const d = new Date(item.date);
-                    const t = new Date();
-                    return d.getDate() === t.getDate() && d.getMonth() === t.getMonth();
-                }
-                // If custom message is typed, show EVERYONE (for invites)
-                return true; 
+        // QUICK ADD
+        window.quickAdd = () => {
+            const n = document.getElementById('qaName').value.trim();
+            const p = document.getElementById('qaPhone').value.trim();
+            const b = document.getElementById('qaBday').value;
+            if (!n || !p) { alert("Name & Phone required!"); return; }
+            push(ref(db, 'members'), { name: n, phone: p, role: 'Member', tag: 'New', birthdayDate: b || '', anniversaryDate: '', spouseName: '', lastSentBday: '', lastSentAnni: '' }).then(() => {
+                showToast(`⚡ ${n} added quickly!`);
+                document.getElementById('qaName').value = ''; document.getElementById('qaPhone').value = ''; document.getElementById('qaBday').value = '';
             });
+        };
 
-            if(filtered.length === 0) {
-                listDiv.innerHTML = `<div class="col-12 text-center text-muted mt-5">
-                    <i class="fas fa-mug-hot fa-3x mb-3 text-secondary"></i>
-                    <h4>No events found!</h4>
-                    <p>Try changing the filter or type a custom message to invite people.</p>
-                </div>`;
-                return;
-            }
+        // DATA FETCH
+        onValue(ref(db, 'members'), snap => {
+            globalData = [];
+            const d = snap.val();
+            if (d) Object.keys(d).forEach(k => globalData.push({ id: k, ...d[k] }));
+            renderDashboard(); renderTable(); renderStats(); renderUpcoming();
+            if (document.getElementById('calendar-section').style.display !== 'none') renderCalendar();
+            if (document.getElementById('analytics-section').style.display !== 'none') renderAnalytics();
+            checkAndNotify();
+        });
 
-            filtered.forEach(item => {
-                const isSent = item.lastSent === todayStr;
-                
-                // --- MESSAGE GENERATION ---
-                                // --- IMPROVED MESSAGE GENERATION ---
-                // --- IMPROVED MESSAGE GENERATION ---
-let msg = "";
-let icon = "";
-let borderColor = "";
+        // LOGS FETCH
+        onValue(ref(db, 'logs'), snap => {
+            logData = [];
+            const d = snap.val();
+            if (d) Object.keys(d).forEach(k => logData.push({ id: k, ...d[k] }));
+            if (document.getElementById('logs-section').style.display !== 'none') renderLogs();
+        });
 
-// मैसेज के सबसे ऊपर संस्था का नाम जोड़ने के लिए:
-const header = "🏛️ *KERALA ASSOCIATION, BIHAR*\n\n";
+        // HELPERS
+        function isToday(ds) { if (!ds) return false; const d = new Date(ds), t = new Date(); return d.getDate() === t.getDate() && d.getMonth() === t.getMonth(); }
+        function getDaysUntil(ds) {
+            if (!ds) return Infinity;
+            const d = new Date(ds), today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+            let next = new Date(today.getFullYear(), d.getMonth(), d.getDate());
+            if (next < today) next.setFullYear(today.getFullYear() + 1);
+            return Math.round((next - today) / 86400000);
+        }
+        function getInitials(name) { return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2); }
+        function tagHTML(tag) { if (!tag) return ''; const cls = { VIP: 'tag-vip', New: 'tag-new', Special: 'tag-special' }[tag] || 'tag-vip'; return `<span class="tag ${cls}">${tag}</span>`; }
 
-if (customMsg) {
-    // Scenario 1: Custom Invite/Notice
-    msg = `${header}📢 *Hello ${item.name},* 👋\n\n${customMsg}\n\nRegards,\n*KAB Family* 🏫`;
-    icon = '<i class="fas fa-bullhorn text-primary"></i>';
-    borderColor = "border-invite";
+        // STATS
+        function renderStats() {
+            const t = new Date(); let todayC = 0, monthC = 0, upC = 0;
+            globalData.forEach(m => {
+                if (isToday(m.birthdayDate)) todayC++; if (isToday(m.anniversaryDate)) todayC++;
+                if (m.birthdayDate) { const d = new Date(m.birthdayDate); if (d.getMonth() === t.getMonth()) monthC++; }
+                if (m.anniversaryDate) { const d = new Date(m.anniversaryDate); if (d.getMonth() === t.getMonth()) monthC++; }
+                if (getDaysUntil(m.birthdayDate) > 0 && getDaysUntil(m.birthdayDate) <= 7) upC++;
+                if (getDaysUntil(m.anniversaryDate) > 0 && getDaysUntil(m.anniversaryDate) <= 7) upC++;
+            });
+            document.getElementById('statTotal').textContent = globalData.length;
+            document.getElementById('statToday').textContent = todayC;
+            document.getElementById('statMonth').textContent = monthC;
+            document.getElementById('statUpcoming').textContent = upC;
+        }
 
-} else if (item.type === 'Birthday') {
-    // Scenario 2: Beautiful Birthday Wish
-    msg = `${header}✨🎂 *Happy Birthday ${item.name}!* 🥳✨\n\n"May this special day bring you endless joy, success, and tons of precious memories!" 🌟\n\nWishing you a fantastic year ahead! 🎈\n\nWarm Regards,\n*KAB Family* 🏫`;
-    icon = '<i class="fas fa-birthday-cake text-danger"></i>';
-    borderColor = "border-bday";
+        // UPCOMING
+        function renderUpcoming() {
+            const list = document.getElementById('upcomingList'); let items = [];
+            globalData.forEach(m => {
+                const db2 = getDaysUntil(m.birthdayDate); if (db2 > 0 && db2 <= 7) items.push({ name: m.name, type: 'Birthday', days: db2, role: m.role });
+                const da = getDaysUntil(m.anniversaryDate); if (da > 0 && da <= 7) { const c = m.spouseName ? `${m.name} & ${m.spouseName}` : m.name; items.push({ name: c, type: 'Anniversary', days: da, role: m.role }); }
+            });
+            items.sort((a, b) => a.days - b.days);
+            if (!items.length) { list.innerHTML = `<p class="small mb-0" style="color:var(--text-muted)"><i class="fas fa-check-circle me-1"></i>No upcoming events</p>`; return; }
+            list.innerHTML = items.map(i => `<div class="upcoming-card ${i.type === 'Anniversary' ? 'uc-anni' : 'uc-bday'}"><div class="upcoming-days">${i.days}<small>day${i.days > 1 ? 's' : ''}</small></div><div style="flex:1"><span class="fw-bold" style="color:var(--text-primary);font-size:.85rem">${i.name}</span><br><small style="color:var(--text-muted)">${i.type} • ${i.role}</small></div><span class="badge ${i.type === 'Anniversary' ? 'badge-type-anni' : 'badge-type-bday'}">${i.type === 'Anniversary' ? '💍' : '🎂'}</span></div>`).join('');
+        }
 
-} else {
-    // Scenario 3: Beautiful Anniversary Wish
-    msg = `${header}💖💍 *Happy Anniversary ${item.name}!* 🥂\n\n"Wishing you another year of being great together. May your love and bond grow stronger with each passing day!" ✨\n\nCheers to your special moments! 🌸\n\nBest Wishes,\n*STES Family* 🏫`;
-    icon = '<i class="fas fa-heart text-danger"></i>';
-    borderColor = "border-anni";
-}
-
-
-                // WhatsApp Link
-                const phone = String(item.phone).replace(/\D/g,'');
-                const cleanPhone = phone.length === 10 ? '91' + phone : phone;
-                const waLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
-
-                // Card HTML
-                listDiv.innerHTML += `
-                <div class="col-md-6 col-lg-4">
-                    <div class="custom-card p-3 ${borderColor}">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="badge-role">${item.role}</span>
-                            <small class="text-muted fw-bold">${item.date}</small>
-                        </div>
-                        
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="me-3 fs-3">${icon}</div>
-                            <div>
-                                <h5 class="fw-bold mb-0">${item.name}</h5>
-                                <small class="text-muted">${item.type}</small>
-                            </div>
-                        </div>
-
-                        <a href="${waLink}" target="_blank" onclick="markSent('${item.id}')" 
-                           class="btn btn-send ${isSent ? 'btn-sent-blue' : ''}">
-                           ${isSent ? '<i class="fas fa-check-double"></i> Sent Today' : '<i class="fab fa-whatsapp"></i> Send Message'}
-                        </a>
-                    </div>
-                </div>`;
+        // DASHBOARD
+        function renderDashboard() {
+            const list = document.getElementById('actionList');
+            const rf = document.getElementById('roleFilter').value;
+            const cm = document.getElementById('customMsg').value.trim();
+            const tp = document.getElementById('templateSelect').value;
+            list.innerHTML = "";
+            let items = [];
+            globalData.forEach(m => {
+                if (rf !== "All" && m.role !== rf) return;
+                if (m.birthdayDate && (cm || isToday(m.birthdayDate))) items.push({ ...m, actionType: 'Birthday' });
+                if (m.anniversaryDate && (cm || isToday(m.anniversaryDate))) items.push({ ...m, actionType: 'Anniversary' });
+                if (cm && !m.birthdayDate && !m.anniversaryDate) items.push({ ...m, actionType: 'Invite' });
+            });
+            if (!items.length) { list.innerHTML = `<div class="col-12 text-center mt-4" style="color:var(--text-muted)"><i class="fas fa-mug-hot fa-2x mb-2"></i><h5>No events found!</h5><p class="small">Change filter or type custom message.</p></div>`; return; }
+            items.forEach(item => {
+                let msg = "", icon = "", bc = "", isSent = false, sk = '';
+                if (cm) { msg = `🏛️ *${getOrgName()}*\n\n📢 *Hello ${item.name},* 👋\n\n${cm}\n\nRegards,\n*KAB Family* 🏫`; icon = '<i class="fas fa-bullhorn" style="color:var(--primary)"></i>'; bc = "border-invite"; }
+                else if (item.actionType === 'Birthday') { msg = T.birthday[tp](item.name); icon = '<i class="fas fa-birthday-cake text-danger"></i>'; bc = "border-bday"; isSent = item.lastSentBday === todayStr; sk = 'lastSentBday'; }
+                else if (item.actionType === 'Anniversary') { const c = item.spouseName ? `${item.name} & ${item.spouseName}` : item.name; msg = T.anniversary[tp](c); icon = '<i class="fas fa-heart text-danger"></i>'; bc = "border-anni"; isSent = item.lastSentAnni === todayStr; sk = 'lastSentAnni'; }
+                const ph = String(item.phone).replace(/\D/g, ''); const cp = ph.length === 10 ? '91' + ph : ph;
+                const wa = `https://wa.me/${cp}?text=${encodeURIComponent(msg)}`;
+                const sp = item.actionType === 'Anniversary' && item.spouseName ? `<small style="color:var(--text-muted)" class="d-block"><i class="fas fa-heart text-danger" style="font-size:.5rem"></i> ${item.name} & ${item.spouseName}</small>` : '';
+                list.innerHTML += `<div class="col-md-6 col-lg-4"><div class="custom-card p-3 ${bc}"><div class="d-flex justify-content-between align-items-center mb-2"><span class="badge-role">${item.role}</span><div>${tagHTML(item.tag)} <span class="badge ${item.actionType === 'Birthday' ? 'badge-type-bday' : item.actionType === 'Anniversary' ? 'badge-type-anni' : 'bg-info text-white'}">${item.actionType === 'Birthday' ? '🎂' : '💍'} ${item.actionType}</span></div></div><div class="d-flex align-items-center mb-2"><div class="avatar avatar-${item.actionType === 'Birthday' ? 'bday' : item.actionType === 'Anniversary' ? 'anni' : 'default'} me-2">${getInitials(item.name)}</div><div><h6 class="fw-bold mb-0" style="font-size:.95rem">${item.name}</h6>${sp}</div></div><a href="${wa}" target="_blank" onclick="markSent('${item.id}','${sk}','${item.name}','${item.actionType}')" class="btn btn-send ${isSent ? 'btn-sent-blue' : ''}">${isSent ? '<i class="fas fa-check-double"></i> Sent' : '<i class="fab fa-whatsapp"></i> Send'}</a></div></div>`;
             });
         }
 
-        window.markSent = (id) => update(ref(db, 'events/' + id), { lastSent: todayStr });
+        window.markSent = (id, key, name, type) => {
+            if (!key) return;
+            update(ref(db, 'members/' + id), { [key]: todayStr });
+            push(ref(db, 'logs'), { name, type, date: todayStr, time: new Date().toLocaleTimeString(), action: 'Sent via WhatsApp' });
+        };
 
-        // --- 3. MANAGE TABLE & SEARCH ---
+        // BULK SEND
+        window.bulkSend = () => {
+            const cm = document.getElementById('customMsg').value.trim();
+            const tp = document.getElementById('templateSelect').value;
+            let links = [];
+            globalData.forEach(m => {
+                if (m.birthdayDate && isToday(m.birthdayDate)) { const msg = cm ? `🏛️ *${getOrgName()}*\n\n📢 *Hello ${m.name},* 👋\n\n${cm}\n\nRegards,\n*KAB Family* 🏫` : T.birthday[tp](m.name); const p = String(m.phone).replace(/\D/g, ''); const c = p.length === 10 ? '91' + p : p; links.push({ url: `https://wa.me/${c}?text=${encodeURIComponent(msg)}`, id: m.id, key: 'lastSentBday', name: m.name, type: 'Birthday' }); }
+                if (m.anniversaryDate && isToday(m.anniversaryDate)) { const couple = m.spouseName ? `${m.name} & ${m.spouseName}` : m.name; const msg = cm ? `🏛️ *${getOrgName()}*\n\n📢 *Hello ${m.name},* 👋\n\n${cm}\n\nRegards,\n*KAB Family* 🏫` : T.anniversary[tp](couple); const p = String(m.phone).replace(/\D/g, ''); const c = p.length === 10 ? '91' + p : p; links.push({ url: `https://wa.me/${c}?text=${encodeURIComponent(msg)}`, id: m.id, key: 'lastSentAnni', name: m.name, type: 'Anniversary' }); }
+            });
+            if (!links.length) { alert("No events today!"); return; }
+            if (!confirm(`Open ${links.length} message(s)?`)) return;
+            const pg = document.getElementById('bulkProgress'), bar = document.getElementById('bulkBar'); pg.style.display = 'block';
+            links.forEach((l, i) => { setTimeout(() => { window.open(l.url, '_blank'); update(ref(db, 'members/' + l.id), { [l.key]: todayStr }); push(ref(db, 'logs'), { name: l.name, type: l.type, date: todayStr, time: new Date().toLocaleTimeString(), action: 'Bulk Sent' }); bar.style.width = ((i + 1) / links.length * 100) + '%'; if (i === links.length - 1) { setTimeout(() => { pg.style.display = 'none'; bar.style.width = '0%'; }, 2000); showToast(`🚀 ${links.length} sent!`); } }, i * 1500); });
+        };
+
+        // GROUP MSG COPY
+        window.copyGroupMsg = () => {
+            const tp = document.getElementById('templateSelect').value;
+            let msgs = [];
+            globalData.forEach(m => {
+                if (m.birthdayDate && isToday(m.birthdayDate)) msgs.push(T.birthday[tp](m.name));
+                if (m.anniversaryDate && isToday(m.anniversaryDate)) { const c = m.spouseName ? `${m.name} & ${m.spouseName}` : m.name; msgs.push(T.anniversary[tp](c)); }
+            });
+            if (!msgs.length) { alert("No events today to copy!"); return; }
+            const full = msgs.join('\n\n━━━━━━━━━━━━━\n\n');
+            navigator.clipboard.writeText(full).then(() => showToast('📋 Copied! Paste in WhatsApp group'));
+            const box = document.getElementById('groupMsgBox'); box.style.display = 'block'; box.textContent = full;
+            setTimeout(() => box.style.display = 'none', 8000);
+        };
+
+        // TABLE
         function renderTable() {
             const tbody = document.getElementById('dataTableBody');
             const search = document.getElementById('searchInput').value.toLowerCase();
+            const rf = document.getElementById('manageRoleFilter').value;
+            const ef = document.getElementById('manageEventFilter').value;
             tbody.innerHTML = "";
-
-            globalData.filter(i => 
-                i.name.toLowerCase().includes(search) || 
-                String(i.phone).includes(search)
-            ).forEach(item => {
-                tbody.innerHTML += `
-                <tr>
-                    <td class="ps-4 fw-bold">${item.name}</td>
-                    <td><span class="badge bg-light text-dark border">${item.role}</span></td>
-                    <td>${item.type}</td>
-                    <td>${item.date}</td>
-                    <td>${item.phone}</td>
-                    <td class="text-end pe-4">
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="openEdit('${item.id}')"><i class="fas fa-pen"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteItem('${item.id}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
+            document.getElementById('totalBadge').textContent = globalData.length;
+            globalData.filter(i => {
+                if (rf !== 'All' && i.role !== rf) return false;
+                if (ef === 'Birthday' && !i.birthdayDate) return false;
+                if (ef === 'Anniversary' && !i.anniversaryDate) return false;
+                if (ef === 'Both' && (!i.birthdayDate || !i.anniversaryDate)) return false;
+                return i.name.toLowerCase().includes(search) || String(i.phone).includes(search) || (i.spouseName && i.spouseName.toLowerCase().includes(search));
+            }).forEach(item => {
+                let eb = '';
+                if (item.birthdayDate) eb += '<span class="badge badge-type-bday me-1">🎂</span>';
+                if (item.anniversaryDate) eb += '<span class="badge badge-type-anni">💍</span>';
+                if (!item.birthdayDate && !item.anniversaryDate) eb = '<span class="badge bg-light text-muted">—</span>';
+                tbody.innerHTML += `<tr><td class="ps-3"><div class="d-flex align-items-center gap-2"><div class="avatar avatar-default" style="width:30px;height:30px;font-size:.6rem">${getInitials(item.name)}</div><span class="fw-bold">${item.name}</span></div></td><td><span class="badge bg-light text-dark border" style="font-size:.7rem">${item.role}</span></td><td>${tagHTML(item.tag)}</td><td>${eb}</td><td style="font-size:.8rem">${item.birthdayDate || '—'}</td><td style="font-size:.8rem">${item.anniversaryDate || '—'}</td><td style="font-size:.8rem">${item.spouseName || '—'}</td><td style="font-size:.8rem">${item.phone}</td><td class="text-end pe-3"><button class="btn btn-sm btn-outline-primary me-1" onclick="openEdit('${item.id}')"><i class="fas fa-pen"></i></button><button class="btn btn-sm btn-outline-danger" onclick="deleteItem('${item.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
             });
         }
 
-        // --- 4. IMPORT LOGIC (SMART & ROBUST) ---
-        document.getElementById('excelFile').addEventListener('change', function() {
-            if(this.files[0]) document.getElementById('fileNameDisplay').innerText = this.files[0].name;
+        // CALENDAR
+        window.changeMonth = d => { calMonth += d; if (calMonth > 11) { calMonth = 0; calYear++; } if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); };
+        function renderCalendar() {
+            const g = document.getElementById('calendarGrid');
+            const mn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('calMonthTitle').textContent = `${mn[calMonth]} ${calYear}`;
+            const fd = new Date(calYear, calMonth, 1).getDay(), dim = new Date(calYear, calMonth + 1, 0).getDate(), today = new Date();
+            let em = {};
+            globalData.forEach(m => {
+                if (m.birthdayDate) { const d = new Date(m.birthdayDate); if (d.getMonth() === calMonth) { const dy = d.getDate(); if (!em[dy]) em[dy] = []; em[dy].push({ type: 'bday', name: m.name }); } }
+                if (m.anniversaryDate) { const d = new Date(m.anniversaryDate); if (d.getMonth() === calMonth) { const dy = d.getDate(); if (!em[dy]) em[dy] = []; em[dy].push({ type: 'anni', name: m.spouseName ? `${m.name} & ${m.spouseName}` : m.name }); } }
+            });
+            let h = '';['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(d => h += `<div class="cal-header">${d}</div>`);
+            for (let i = 0; i < fd; i++) h += '<div class="cal-day empty"></div>';
+            for (let d = 1; d <= dim; d++) {
+                const isT = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+                const ev = em[d] || []; const hb = ev.some(e => e.type === 'bday'), ha = ev.some(e => e.type === 'anni');
+                let dots = ''; if (hb) dots += '<span class="cal-dot dot-bday" style="left:calc(50% - 4px)"></span>'; if (ha) dots += `<span class="cal-dot dot-anni" style="left:calc(50% + ${hb ? 4 : 0}px)"></span>`;
+                h += `<div class="cal-day ${isT ? 'today' : ''} ${ev.length ? 'has-event' : ''}" onclick="showCalEvents(${d})" title="${ev.map(e => e.name).join(', ')}">${d}${dots}</div>`;
+            }
+            g.innerHTML = h;
+        }
+        window.showCalEvents = day => {
+            const l = document.getElementById('calEventsList'); let ev = [];
+            globalData.forEach(m => {
+                if (m.birthdayDate) { const d = new Date(m.birthdayDate); if (d.getMonth() === calMonth && d.getDate() === day) ev.push({ t: '🎂 Birthday', n: m.name, r: m.role }); }
+                if (m.anniversaryDate) { const d = new Date(m.anniversaryDate); if (d.getMonth() === calMonth && d.getDate() === day) ev.push({ t: '💍 Anniversary', n: m.spouseName ? `${m.name} & ${m.spouseName}` : m.name, r: m.role }); }
+            });
+            if (!ev.length) { l.innerHTML = `<p class="small text-center" style="color:var(--text-muted)">No events on day ${day}</p>`; return; }
+            l.innerHTML = `<h6 class="fw-bold small">📌 Day ${day}:</h6>` + ev.map(e => `<div class="upcoming-card ${e.t.includes('Anni') ? 'uc-anni' : 'uc-bday'}"><div style="flex:1"><span class="fw-bold">${e.n}</span> <span class="badge-role ms-1">${e.r}</span></div><span class="small fw-bold">${e.t}</span></div>`).join('');
+        };
+
+        // ANALYTICS
+        function renderAnalytics() {
+            const mn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const colors = ['#ff6b6b', '#ff9ff3', '#feca57', '#48dbfb', '#0abde3', '#10ac84', '#01a3a4', '#5f27cd', '#667eea', '#f093fb', '#ff6348', '#2ed573'];
+
+            // Birthday per month
+            let bdayMonths = new Array(12).fill(0);
+            globalData.forEach(m => { if (m.birthdayDate) { const d = new Date(m.birthdayDate); bdayMonths[d.getMonth()]++; } });
+            const maxB = Math.max(...bdayMonths, 1);
+            document.getElementById('bdayChart').innerHTML = mn.map((m, i) => `<div class="d-flex align-items-center gap-2 mb-1"><span class="small fw-bold" style="width:30px;color:var(--text-muted)">${m}</span><div class="chart-bar" style="width:${bdayMonths[i] / maxB * 100}%;background:${colors[i]}">&nbsp;</div><span class="small fw-bold" style="color:var(--text-primary)">${bdayMonths[i]}</span></div>`).join('');
+
+            // Anniversary per month
+            let anniMonths = new Array(12).fill(0);
+            globalData.forEach(m => { if (m.anniversaryDate) { const d = new Date(m.anniversaryDate); anniMonths[d.getMonth()]++; } });
+            const maxA = Math.max(...anniMonths, 1);
+            document.getElementById('anniChart').innerHTML = mn.map((m, i) => `<div class="d-flex align-items-center gap-2 mb-1"><span class="small fw-bold" style="width:30px;color:var(--text-muted)">${m}</span><div class="chart-bar" style="width:${anniMonths[i] / maxA * 100}%;background:${colors[i]}">&nbsp;</div><span class="small fw-bold" style="color:var(--text-primary)">${anniMonths[i]}</span></div>`).join('');
+
+            // Role distribution
+            let roles = {}; globalData.forEach(m => { roles[m.role] = (roles[m.role] || 0) + 1; });
+            const maxR = Math.max(...Object.values(roles), 1);
+            document.getElementById('roleChart').innerHTML = Object.entries(roles).map(([r, c], i) => `<div class="d-flex align-items-center gap-2 mb-2"><span class="small fw-bold" style="min-width:120px;color:var(--text-muted)">${r}</span><div class="chart-bar" style="width:${c / maxR * 100}%;background:${colors[i % 12]}">&nbsp;</div><span class="small fw-bold" style="color:var(--text-primary)">${c}</span></div>`).join('');
+
+            // Tag distribution
+            let tags = { 'No Tag': 0 }; globalData.forEach(m => { const t = m.tag || 'No Tag'; tags[t] = (tags[t] || 0) + 1; });
+            const maxT = Math.max(...Object.values(tags), 1);
+            document.getElementById('tagChart').innerHTML = Object.entries(tags).map(([t, c], i) => `<div class="d-flex align-items-center gap-2 mb-2"><span class="small fw-bold" style="min-width:80px;color:var(--text-muted)">${t}</span><div class="chart-bar" style="width:${c / maxT * 100}%;background:${colors[(i + 4) % 12]}">&nbsp;</div><span class="small fw-bold" style="color:var(--text-primary)">${c}</span></div>`).join('');
+        }
+
+        // LOGS
+        function renderLogs() {
+            const list = document.getElementById('logList');
+            if (!logData.length) { list.innerHTML = `<p style="color:var(--text-muted)" class="small">No message history yet.</p>`; return; }
+            const sorted = [...logData].sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
+            list.innerHTML = sorted.slice(0, 50).map(l => `<div class="log-entry"><div class="d-flex justify-content-between"><span class="fw-bold" style="color:var(--text-primary)">${l.name}</span><small style="color:var(--text-muted)">${l.date} ${l.time}</small></div><small style="color:var(--text-secondary)">${l.type} • ${l.action}</small></div>`).join('');
+        }
+
+        // EXPORT
+        window.exportToExcel = () => {
+            const d = globalData.map(m => ({ Name: m.name, Phone: m.phone, Role: m.role, Tag: m.tag || '', BirthdayDate: m.birthdayDate || '', AnniversaryDate: m.anniversaryDate || '', SpouseName: m.spouseName || '' }));
+            const ws = XLSX.utils.json_to_sheet(d); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Members");
+            XLSX.writeFile(wb, `KAB_Members_${todayStr}.xlsx`); showToast("📥 Exported!");
+        };
+
+        // PASSWORD
+        window.changePassword = () => {
+            const cur = document.getElementById('settOldPass').value;
+            const nw = document.getElementById('settNewPass').value;
+            const cf = document.getElementById('settConfirmPass').value;
+            const saved = localStorage.getItem('adminPass') || 'STES@1212';
+            if (cur !== saved) { alert("❌ Current password wrong!"); return; }
+            if (nw.length < 4) { alert("⚠️ Minimum 4 characters!"); return; }
+            if (nw !== cf) { alert("⚠️ Passwords don't match!"); return; }
+            localStorage.setItem('adminPass', nw);
+            update(ref(db, 'settings'), { adminPass: nw });
+            showToast("🔐 Password updated!");
+            ['settOldPass', 'settNewPass', 'settConfirmPass'].forEach(i => document.getElementById(i).value = '');
+        };
+
+        // NOTIFICATIONS
+        window.enableNotifications = () => {
+            if (!('Notification' in window)) { alert("Browser doesn't support notifications"); return; }
+            Notification.requestPermission().then(p => {
+                if (p === 'granted') { showToast("🔔 Notifications enabled!"); checkAndNotify(); }
+                else alert("Please allow notifications in browser settings");
+            });
+        };
+        function checkAndNotify() {
+            if (Notification.permission !== 'granted') return;
+            let todayEvents = [];
+            globalData.forEach(m => {
+                if (isToday(m.birthdayDate)) todayEvents.push(`🎂 ${m.name}'s Birthday`);
+                if (isToday(m.anniversaryDate)) todayEvents.push(`💍 ${m.name}'s Anniversary`);
+            });
+            if (todayEvents.length && !sessionStorage.getItem('notified')) {
+                new Notification('🎉 KAB - Today\'s Events', { body: todayEvents.join('\n'), icon: 'https://cdn-icons-png.flaticon.com/512/2618/2618175.png' });
+                sessionStorage.setItem('notified', '1');
+            }
+        }
+
+        // CLEAR ALL
+        window.clearAll = () => { remove(ref(db, 'members')).then(() => showToast("🗑️ All data cleared!")); };
+
+        // EDIT
+        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+        window.openEdit = id => {
+            const i = globalData.find(x => x.id === id);
+            document.getElementById('editId').value = id;
+            document.getElementById('editName').value = i.name;
+            document.getElementById('editRole').value = i.role || 'Member';
+            document.getElementById('editTag').value = i.tag || '';
+            document.getElementById('editBdayDate').value = i.birthdayDate || '';
+            document.getElementById('editAnniDate').value = i.anniversaryDate || '';
+            document.getElementById('editSpouseName').value = i.spouseName || '';
+            document.getElementById('editPhone').value = i.phone;
+            editModal.show();
+        };
+        document.getElementById('btnSaveEdit').addEventListener('click', () => {
+            const id = document.getElementById('editId').value;
+            const ad = document.getElementById('editAnniDate').value;
+            const sp = document.getElementById('editSpouseName').value.trim();
+            if (ad && !sp) { alert("⚠️ Spouse Name required for Anniversary!"); return; }
+            update(ref(db, 'members/' + id), {
+                name: document.getElementById('editName').value.trim(),
+                role: document.getElementById('editRole').value,
+                tag: document.getElementById('editTag').value,
+                birthdayDate: document.getElementById('editBdayDate').value,
+                anniversaryDate: ad, spouseName: sp,
+                phone: document.getElementById('editPhone').value.trim()
+            }).then(() => { editModal.hide(); showToast("✅ Updated!"); });
         });
+        window.deleteItem = id => { if (confirm("Delete?")) remove(ref(db, 'members/' + id)).then(() => showToast("🗑️ Deleted!")); };
+
+        // SMART IMPORT
+        const CA = { name: ['name', 'fullname', 'member', 'person', 'naam', 'student', 'teacher', 'user', 'fname'], phone: ['phone', 'mobile', 'contact', 'cell', 'tel', 'whatsapp', 'number', 'mob'], birthdayDate: ['birthday', 'bday', 'dob', 'dateofbirth', 'birthdate', 'birth', 'janmdin'], anniversaryDate: ['anniversary', 'anni', 'marriagedate', 'marriage', 'wedding', 'shaadi', 'vivah'], spouseName: ['spouse', 'wife', 'husband', 'partner', 'patni', 'pati', 'betterhalf'], role: ['role', 'designation', 'position', 'post', 'type', 'category'], tag: ['tag', 'label', 'badge', 'mark', 'category'] };
+        function ck(s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ''); }
+        function sv(row, f) { const a = CA[f] || []; const rk = Object.keys(row); for (const al of a) { const fd = rk.find(k => ck(k) === al); if (fd && row[fd] !== undefined && row[fd] !== '') return row[fd]; } for (const al of a) { const fd = rk.find(k => ck(k).includes(al) || al.includes(ck(k))); if (fd && row[fd] !== undefined && row[fd] !== '') return row[fd]; } return undefined; }
+        function spd(v) { if (!v && v !== 0) return ''; if (typeof v === 'number') return new Date((v - 25569) * 86400000).toISOString().slice(0, 10); let s = String(v).trim(); if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s; let m = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/); if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; m = s.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/); if (m) return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`; const d = new Date(s); if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10); return ''; }
+        function snr(v) { if (!v) return 'Member'; const r = String(v).toLowerCase(); if (r.includes('patron')) return 'Patron'; if (r.includes('governing') || r.includes('gbm') || r.includes('body')) return 'Governing Body Member'; if (r.includes('executive') || r.includes('exec')) return 'Executive Member'; return 'Member'; }
+        function scp(p) { if (!p) return ''; let s = String(p).replace(/[^0-9]/g, ''); if (s.startsWith('91') && s.length === 12) s = s.slice(2); if (s.startsWith('0') && s.length === 11) s = s.slice(1); return s; }
+
+        document.getElementById('excelFile').addEventListener('change', function () { if (this.files[0]) { document.getElementById('fileNameDisplay').innerText = this.files[0].name; pfn(this.files[0]); } });
+        function pfn(file) { const r = new FileReader(); r.readAsArrayBuffer(file); r.onload = e => { const wb = XLSX.read(e.target.result, { type: 'array' }); const j = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]); const p = document.getElementById('importPreview'), c = document.getElementById('previewContent'); p.style.display = 'block'; let mp = ''; if (j.length > 0) { const row = j[0]; mp = '<div class="mt-1"><strong>🧠 Mapping:</strong><br>';['name', 'phone', 'birthdayDate', 'anniversaryDate', 'spouseName', 'role', 'tag'].forEach(f => { const v = sv(row, f); const cn = Object.keys(row).find(k => row[k] === v); mp += v !== undefined ? `✅ "${cn}" → ${f}<br>` : `⚠️ ${f} → not found<br>`; }); mp += '</div>'; } c.innerHTML = `<strong>📊 Rows:</strong> ${j.length}<br><strong>📋 Cols:</strong> ${j.length > 0 ? Object.keys(j[0]).join(', ') : 'None'}${mp}`; }; }
 
         document.getElementById('btnImport').addEventListener('click', () => {
-            const file = document.getElementById('excelFile').files[0];
-            if(!file) { alert("Please select a file!"); return; }
-
-            const reader = new FileReader();
-            reader.readAsArrayBuffer(file);
-            reader.onload = (e) => {
-                const workbook = XLSX.read(e.target.result, {type:'array'});
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(sheet);
-                
-                let count = 0;
-                json.forEach(row => {
-                    // Normalize Keys (Case insensitive search)
-                    const getVal = (k) => row[Object.keys(row).find(key => key.toLowerCase().includes(k))];
-
-                    const name = getVal('name') || getVal('student');
-                    const phone = getVal('phone') || getVal('mobile') || getVal('contact');
-                    let date = getVal('date') || getVal('dob');
-                    
-                    if(name && phone) {
-                        // Date Convert (Excel Serial to YYYY-MM-DD)
-                        if(typeof date === 'number') {
-                            date = new Date((date - 25569)*86400000).toISOString().slice(0,10);
-                        }
-                        
-                        push(ref(db, 'events'), {
-                            name: name,
-                            phone: String(phone),
-                            date: date || new Date().toISOString().slice(0,10),
-                            role: getVal('role') || 'Student',
-                            type: getVal('type') || 'Birthday',
-                            lastSent: ''
-                        });
-                        count++;
-                    }
-                });
-                alert(count + " Records Imported!");
-                window.switchSection('dashboard');
+            const f = document.getElementById('excelFile').files[0]; if (!f) { alert("Select file!"); return; }
+            const r = new FileReader(); r.readAsArrayBuffer(f); r.onload = e => {
+                const wb = XLSX.read(e.target.result, { type: 'array' }); const j = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                let c = 0, sk = 0;
+                j.forEach(row => { const n = sv(row, 'name'), p = sv(row, 'phone'); if (n && p) { push(ref(db, 'members'), { name: String(n).trim(), phone: scp(p), role: snr(sv(row, 'role')), tag: sv(row, 'tag') || '', birthdayDate: spd(sv(row, 'birthdayDate')), anniversaryDate: spd(sv(row, 'anniversaryDate')), spouseName: sv(row, 'spouseName') ? String(sv(row, 'spouseName')).trim() : '', lastSentBday: '', lastSentAnni: '' }); c++; } else sk++; });
+                showToast(`🎉 ${c} imported!${sk ? ` (${sk} skipped)` : ''}`);
+                document.getElementById('importPreview').style.display = 'none'; document.getElementById('fileNameDisplay').innerText = 'Click to Select File'; document.getElementById('excelFile').value = '';
             };
         });
 
-        // Sample Download
         document.getElementById('btnDownloadSample').addEventListener('click', () => {
-             const ws = XLSX.utils.json_to_sheet([{ Name: "Rahul", Phone: "9988776655", Role: "Teacher", Type: "Birthday", Date: "1990-01-01" }]);
-             const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Sample");
-             XLSX.writeFile(wb, "Sample_Format.xlsx");
+            const ws = XLSX.utils.json_to_sheet([{ Name: "Rajesh Kumar", Phone: "9988776655", Role: "Member", Tag: "VIP", BirthdayDate: "1990-05-15", AnniversaryDate: "2015-02-14", SpouseName: "Priya Kumar" }, { Name: "Amit Singh", Phone: "9876543210", Role: "Executive Member", Tag: "", BirthdayDate: "1985-08-20" }, { Name: "Suresh Jha", Phone: "8877665544", Role: "Patron", Tag: "Special", BirthdayDate: "1975-12-25", AnniversaryDate: "2000-11-10", SpouseName: "Sunita Jha" }]);
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Sample"); XLSX.writeFile(wb, "Sample_Format.xlsx");
         });
 
-        // --- 5. EDIT & DELETE LOGIC ---
-        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
-        
-        window.openEdit = (id) => {
-            const item = globalData.find(i => i.id === id);
-            document.getElementById('editId').value = id;
-            document.getElementById('editName').value = item.name;
-            document.getElementById('editRole').value = item.role || 'Student';
-            document.getElementById('editType').value = item.type || 'Birthday';
-            document.getElementById('editDate').value = item.date;
-            document.getElementById('editPhone').value = item.phone;
-            editModal.show();
-        };
-
-        document.getElementById('btnSaveEdit').addEventListener('click', () => {
-            const id = document.getElementById('editId').value;
-            update(ref(db, 'events/'+id), {
-                name: document.getElementById('editName').value,
-                role: document.getElementById('editRole').value,
-                type: document.getElementById('editType').value,
-                date: document.getElementById('editDate').value,
-                phone: document.getElementById('editPhone').value
-            }).then(() => {
-                editModal.hide();
-            });
-        });
-
-        window.deleteItem = (id) => { if(confirm("Are you sure you want to delete this?")) remove(ref(db, 'events/'+id)); };
-
-        // Event Listeners
+        // LISTENERS
         document.getElementById('roleFilter').addEventListener('change', renderDashboard);
         document.getElementById('customMsg').addEventListener('keyup', renderDashboard);
+        document.getElementById('templateSelect').addEventListener('change', renderDashboard);
         document.getElementById('searchInput').addEventListener('keyup', renderTable);
-
+        document.getElementById('manageRoleFilter').addEventListener('change', renderTable);
+        document.getElementById('manageEventFilter').addEventListener('change', renderTable);
     </script>
 </body>
+
 </html>
