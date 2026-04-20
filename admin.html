@@ -644,7 +644,8 @@
                     style="color:var(--primary)">
                     <i class="fas fa-sync-alt me-1"></i> Refresh
                 </button>
-                <button onclick="if(confirm('Logout?')) window.location.href='index.html'" class="btn btn-sm btn-outline-danger fw-bold rounded-pill px-3">
+                <button onclick="if(confirm('Logout?')) window.location.href='index.html'"
+                    class="btn btn-sm btn-outline-danger fw-bold rounded-pill px-3">
                     <i class="fas fa-sign-out-alt me-1"></i> Logout
                 </button>
             </div>
@@ -711,8 +712,8 @@
             </div>
 
             <div class="custom-card p-3 mb-4">
-                <div class="row g-2 align-items-center">
-                    <div class="col-md-2">
+                <div class="row g-2 align-items-center mb-3 pb-3 border-bottom">
+                    <div class="col-md-4">
                         <label class="small fw-bold mb-1" style="color:var(--text-muted);font-size:.7rem">FILTER
                             ROLE</label>
                         <select id="roleFilter" class="form-select form-select-sm border-0 fw-bold"
@@ -724,15 +725,9 @@
                             <option value="Patron">Patron</option>
                         </select>
                     </div>
-                    <div class="col-md-5">
-                        <label class="small fw-bold mb-1" style="color:var(--text-muted);font-size:.7rem">CUSTOM
-                            MESSAGE</label>
-                        <input type="text" id="customMsg" class="form-control form-control-sm border-0"
-                            style="background:var(--primary-light)" placeholder="Type invite/meeting message...">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="small fw-bold mb-1" style="color:var(--text-muted);font-size:.7rem">MSG
-                            STYLE</label>
+                    <div class="col-md-4">
+                        <label class="small fw-bold mb-1" style="color:var(--text-muted);font-size:.7rem">BIRTHDAY/ANNI
+                            MSG STYLE</label>
                         <select id="templateSelect" class="form-select form-select-sm border-0 fw-bold"
                             style="background:var(--primary-light);color:var(--text-primary)">
                             <option value="formal">🎩 Formal</option>
@@ -741,14 +736,58 @@
                             <option value="short">⚡ Short</option>
                         </select>
                     </div>
-                    <div class="col-md-3 d-flex gap-2 pt-3">
-                        <button class="btn btn-sm btn-outline-success rounded-pill flex-fill"
-                            onclick="exportToExcel()"><i class="fas fa-download me-1"></i>Export</button>
-                        <button class="btn btn-sm rounded-pill flex-fill text-white"
-                            style="background:linear-gradient(135deg,#667eea,#764ba2)" onclick="bulkSend()"><i
-                                class="fas fa-paper-plane me-1"></i>Bulk Send</button>
-                        <button class="btn btn-sm btn-outline-info rounded-pill" onclick="copyGroupMsg()"
-                            title="Copy Group Message"><i class="fas fa-copy"></i></button>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button class="btn btn-sm btn-outline-success w-100 rounded-pill" onclick="exportToExcel()"><i
+                                class="fas fa-download me-1"></i> Export Filtered</button>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-2 pt-1" style="font-size:0.9rem;"><i
+                        class="fas fa-envelope-open-text me-2 text-primary"></i>Custom Event / Invitation Message</h6>
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        <label class="small fw-bold mb-1" style="color:var(--text-muted);font-size:.7rem">MESSAGE
+                            TYPE</label>
+                        <select id="msgTemplateType" class="form-select form-select-sm border-0"
+                            style="background:var(--primary-light)">
+                            <option value="custom">✍️ Free Custom Msg</option>
+                            <option value="meeting">🤝 Meeting Invite</option>
+                            <option value="celebration">🎊 Celebration/Event</option>
+                            <option value="important">⚠️ Important Info</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-bold mb-1" style="color:var(--text-muted);font-size:.7rem">TOPIC /
+                            REASON</label>
+                        <input type="text" id="evTitle" class="form-control form-control-sm border-0"
+                            style="background:var(--primary-light)" placeholder="e.g. Onam Festival">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-bold mb-1" style="color:var(--text-muted);font-size:.7rem">DATE &
+                            TIME</label>
+                        <input type="text" id="evDateTime" class="form-control form-control-sm border-0"
+                            style="background:var(--primary-light)" placeholder="e.g. 25 Oct, 10:00 AM">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-bold mb-1" style="color:var(--text-muted);font-size:.7rem">VENUE</label>
+                        <input type="text" id="evVenue" class="form-control form-control-sm border-0"
+                            style="background:var(--primary-light)" placeholder="e.g. KAB Hall">
+                    </div>
+                    <div class="col-12 mt-2">
+                        <textarea id="customMsg" class="form-control form-control-sm" rows="3"
+                            placeholder="Select a template and fill details, or type your own custom message here..."
+                            style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);"></textarea>
+                    </div>
+                    <div class="col-12 mt-2 d-flex justify-content-between align-items-center">
+                        <small class="text-muted d-none d-md-block">Fill details above to auto-generate a beautiful
+                            message.</small>
+                        <div class="d-flex gap-2 w-100 justify-content-end">
+                            <button class="btn btn-sm btn-outline-info rounded-pill" onclick="copyGroupMsg()"
+                                title="Copy Group Message"><i class="fas fa-copy me-1"></i> Copy for Group</button>
+                            <button class="btn btn-sm text-white rounded-pill"
+                                style="background:linear-gradient(135deg,#667eea,#764ba2)" onclick="bulkSend()"><i
+                                    class="fas fa-paper-plane me-1"></i> Bulk Send</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1023,18 +1062,25 @@
 
                         <div class="form-section-title"><i class="fas fa-lock me-1"></i> Change Password</div>
                         <div class="mb-2">
-                            <label class="form-label small fw-bold" style="color:var(--text-muted);font-size:.72rem">CURRENT PASSWORD</label>
-                            <input type="password" id="settOldPass" class="form-control form-control-sm" placeholder="Enter current password">
+                            <label class="form-label small fw-bold"
+                                style="color:var(--text-muted);font-size:.72rem">CURRENT PASSWORD</label>
+                            <input type="password" id="settOldPass" class="form-control form-control-sm"
+                                placeholder="Enter current password">
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small fw-bold" style="color:var(--text-muted);font-size:.72rem">NEW PASSWORD</label>
-                            <input type="password" id="settNewPass" class="form-control form-control-sm" placeholder="Enter new password">
+                            <label class="form-label small fw-bold" style="color:var(--text-muted);font-size:.72rem">NEW
+                                PASSWORD</label>
+                            <input type="password" id="settNewPass" class="form-control form-control-sm"
+                                placeholder="Enter new password">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold" style="color:var(--text-muted);font-size:.72rem">CONFIRM PASSWORD</label>
-                            <input type="password" id="settConfirmPass" class="form-control form-control-sm" placeholder="Confirm new password">
+                            <label class="form-label small fw-bold"
+                                style="color:var(--text-muted);font-size:.72rem">CONFIRM PASSWORD</label>
+                            <input type="password" id="settConfirmPass" class="form-control form-control-sm"
+                                placeholder="Confirm new password">
                         </div>
-                        <button class="btn btn-sm btn-primary w-100 rounded-pill mb-4" onclick="changePassword()"><i class="fas fa-key me-1"></i> Update Password</button>
+                        <button class="btn btn-sm btn-primary w-100 rounded-pill mb-4" onclick="changePassword()"><i
+                                class="fas fa-key me-1"></i> Update Password</button>
 
                         <div class="form-section-title"><i class="fas fa-bell me-1"></i> Browser Notifications</div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1059,6 +1105,38 @@
                                 onclick="if(confirm('⚠️ Delete ALL members? This cannot be undone!'))clearAll()"><i
                                     class="fas fa-trash me-1"></i> Clear All</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BULK SEND MODAL -->
+    <div class="modal fade" id="bulkModal" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="background:var(--bg-card);color:var(--text-primary);">
+                <div class="modal-header border-0 py-2" style="background:var(--primary-light)">
+                    <h6 class="modal-title fw-bold text-primary"><i class="fas fa-paper-plane me-2"></i>Bulk Sending
+                    </h6>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <div id="bulkStatusIcon" class="mb-3">
+                        <div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>
+                    </div>
+                    <h5 class="fw-bold mb-2" id="bulkStatusTitle">Preparing Messages...</h5>
+                    <p class="small text-muted mb-3" id="bulkStatusCounts">0 of 0 Sent</p>
+                    <div class="progress mb-3"
+                        style="height: 10px; border-radius: 10px; background: var(--border-color);">
+                        <div id="bulkProgressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                            style="width: 0%; background: linear-gradient(135deg,#667eea,#764ba2);"></div>
+                    </div>
+                    <p class="small fw-bold" id="bulkCurrentName" style="color:var(--primary)">-</p>
+
+                    <div class="mt-4">
+                        <button class="btn btn-outline-danger fw-bold rounded-pill px-4" id="btnCancelBulk"
+                            onclick="cancelBulkSend()">Cancel Sending</button>
+                        <button class="btn btn-success fw-bold rounded-pill px-4" id="btnCloseBulk"
+                            onclick="closeBulkModal()" style="display:none;">Done</button>
                     </div>
                 </div>
             </div>
@@ -1192,7 +1270,7 @@
             const w = document.getElementById('duplicateWarning');
             const m = document.getElementById('duplicateMsg');
             if (!n && !p) { w.classList.add('d-none'); return; }
-            const d = globalData.find(x => (n && x.name.toLowerCase() === n) || (p.length >= 10 && String(x.phone) === p));
+            const d = globalData.find(x => (n && x.name?.toLowerCase() === n) || (p.length >= 10 && String(x.phone) === p));
             if (d) { w.classList.remove('d-none'); m.textContent = `Similar: "${d.name}" (${d.phone})`; } else { w.classList.add('d-none'); }
         };
 
@@ -1200,24 +1278,49 @@
         document.getElementById('btnAddMember').addEventListener('click', () => {
             const name = document.getElementById('addName').value.trim();
             const phone = document.getElementById('addPhone').value.trim();
-            const role = document.getElementById('addRole').value;
-            const tag = document.getElementById('addTag').value;
+            const role = document.getElementById('addRole').value || 'Member';
+            const tag = document.getElementById('addTag').value || '';
             const hasBday = document.getElementById('chkBirthday').checked;
             const hasAnni = document.getElementById('chkAnniversary').checked;
-            const bdayDate = document.getElementById('addBdayDate').value;
-            const anniDate = document.getElementById('addAnniDate').value;
+            const bdayDate = document.getElementById('addBdayDate').value || '';
+            const anniDate = document.getElementById('addAnniDate').value || '';
             const spouse = document.getElementById('addSpouseName').value.trim();
+
             if (!name || !phone) { alert("⚠️ Name & Phone required!"); return; }
-            if (!hasBday && !hasAnni) { alert("⚠️ Select Birthday or Anniversary!"); return; }
             if (hasBday && !bdayDate) { alert("⚠️ Enter Birthday Date!"); return; }
             if (hasAnni && !anniDate) { alert("⚠️ Enter Anniversary Date!"); return; }
             if (hasAnni && !spouse) { alert("⚠️ Enter Spouse Name!"); return; }
-            push(ref(db, 'members'), { name, phone: String(phone), role, tag: tag || '', birthdayDate: hasBday ? bdayDate : '', anniversaryDate: hasAnni ? anniDate : '', spouseName: hasAnni ? spouse : '', lastSentBday: '', lastSentAnni: '' }).then(() => {
+
+            const btn = document.getElementById('btnAddMember');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+            btn.disabled = true;
+
+            const payload = {
+                name,
+                phone: String(phone),
+                role,
+                tag,
+                birthdayDate: hasBday ? bdayDate : '',
+                anniversaryDate: hasAnni ? anniDate : '',
+                spouseName: hasAnni ? spouse : '',
+                lastSentBday: '',
+                lastSentAnni: ''
+            };
+
+            push(ref(db, 'members'), payload).then(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
                 showToast(`✅ ${name} added!`);
                 ['addName', 'addPhone', 'addBdayDate', 'addAnniDate', 'addSpouseName'].forEach(i => document.getElementById(i).value = '');
                 document.getElementById('chkBirthday').checked = true; document.getElementById('chkAnniversary').checked = false;
                 document.getElementById('anniSection').classList.remove('active'); document.getElementById('bdayDateSection').style.display = 'block';
                 document.getElementById('duplicateWarning').classList.add('d-none'); document.getElementById('addTag').value = '';
+            }).catch(e => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                alert("❌ Add failed: " + e.message);
+                console.error("Firebase Add Error:", e);
             });
         });
 
@@ -1261,8 +1364,12 @@
             if (next < today) next.setFullYear(today.getFullYear() + 1);
             return Math.round((next - today) / 86400000);
         }
-        function getInitials(name) { return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2); }
+        function getInitials(name) { return name ? name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) : ''; }
         function tagHTML(tag) { if (!tag) return ''; const cls = { VIP: 'tag-vip', New: 'tag-new', Special: 'tag-special' }[tag] || 'tag-vip'; return `<span class="tag ${cls}">${tag}</span>`; }
+        function getWaLink(phone, msg) {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            return isMobile ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `https://web.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
+        }
 
         // STATS
         function renderStats() {
@@ -1300,22 +1407,55 @@
             const tp = document.getElementById('templateSelect').value;
             list.innerHTML = "";
             let items = [];
+
             globalData.forEach(m => {
                 if (rf !== "All" && m.role !== rf) return;
-                if (m.birthdayDate && (cm || isToday(m.birthdayDate))) items.push({ ...m, actionType: 'Birthday' });
-                if (m.anniversaryDate && (cm || isToday(m.anniversaryDate))) items.push({ ...m, actionType: 'Anniversary' });
-                if (cm && !m.birthdayDate && !m.anniversaryDate) items.push({ ...m, actionType: 'Invite' });
+
+                if (cm) {
+                    let act = 'Invite';
+                    if (m.birthdayDate && isToday(m.birthdayDate)) act = 'Birthday';
+                    else if (m.anniversaryDate && isToday(m.anniversaryDate)) act = 'Anniversary';
+                    items.push({ ...m, actionType: act });
+                } else {
+                    if (m.birthdayDate && isToday(m.birthdayDate)) items.push({ ...m, actionType: 'Birthday' });
+                    if (m.anniversaryDate && isToday(m.anniversaryDate)) items.push({ ...m, actionType: 'Anniversary' });
+                }
             });
-            if (!items.length) { list.innerHTML = `<div class="col-12 text-center mt-4" style="color:var(--text-muted)"><i class="fas fa-mug-hot fa-2x mb-2"></i><h5>No events found!</h5><p class="small">Change filter or type custom message.</p></div>`; return; }
+
+            if (!items.length) {
+                list.innerHTML = `<div class="col-12 text-center mt-4" style="color:var(--text-muted)"><i class="fas fa-mug-hot fa-2x mb-2"></i><h5>${cm ? 'No members found for this role.' : 'No events found today!'}</h5><p class="small">Change filter or type a custom message.</p></div>`;
+                return;
+            }
+
             items.forEach(item => {
                 let msg = "", icon = "", bc = "", isSent = false, sk = '';
-                if (cm) { msg = `🏛️ *${getOrgName()}*\n\n📢 *Hello ${item.name},* 👋\n\n${cm}\n\nRegards,\n*KAB Family* 🏫`; icon = '<i class="fas fa-bullhorn" style="color:var(--primary)"></i>'; bc = "border-invite"; }
-                else if (item.actionType === 'Birthday') { msg = T.birthday[tp](item.name); icon = '<i class="fas fa-birthday-cake text-danger"></i>'; bc = "border-bday"; isSent = item.lastSentBday === todayStr; sk = 'lastSentBday'; }
-                else if (item.actionType === 'Anniversary') { const c = item.spouseName ? `${item.name} & ${item.spouseName}` : item.name; msg = T.anniversary[tp](c); icon = '<i class="fas fa-heart text-danger"></i>'; bc = "border-anni"; isSent = item.lastSentAnni === todayStr; sk = 'lastSentAnni'; }
-                const ph = String(item.phone).replace(/\D/g, ''); const cp = ph.length === 10 ? '91' + ph : ph;
-                const wa = `https://wa.me/${cp}?text=${encodeURIComponent(msg)}`;
+                if (cm) {
+                    msg = `🏛️ *${getOrgName()}*\n\n📢 *Hello ${item.name},* 👋\n\n${cm}\n\nRegards,\n*KAB Family* 🏫`;
+                    icon = '<i class="fas fa-bullhorn" style="color:var(--primary)"></i>';
+                    bc = "border-invite";
+                }
+                else if (item.actionType === 'Birthday') {
+                    msg = T.birthday[tp](item.name);
+                    icon = '<i class="fas fa-birthday-cake text-danger"></i>';
+                    bc = "border-bday";
+                    isSent = item.lastSentBday === todayStr;
+                    sk = 'lastSentBday';
+                }
+                else if (item.actionType === 'Anniversary') {
+                    const c = item.spouseName ? `${item.name} & ${item.spouseName}` : item.name;
+                    msg = T.anniversary[tp](c);
+                    icon = '<i class="fas fa-heart text-danger"></i>';
+                    bc = "border-anni";
+                    isSent = item.lastSentAnni === todayStr;
+                    sk = 'lastSentAnni';
+                }
+
+                const ph = String(item.phone).replace(/\D/g, '');
+                const cp = ph.length === 10 ? '91' + ph : ph;
+                const wa = getWaLink(cp, msg);
                 const sp = item.actionType === 'Anniversary' && item.spouseName ? `<small style="color:var(--text-muted)" class="d-block"><i class="fas fa-heart text-danger" style="font-size:.5rem"></i> ${item.name} & ${item.spouseName}</small>` : '';
-                list.innerHTML += `<div class="col-md-6 col-lg-4"><div class="custom-card p-3 ${bc}"><div class="d-flex justify-content-between align-items-center mb-2"><span class="badge-role">${item.role}</span><div>${tagHTML(item.tag)} <span class="badge ${item.actionType === 'Birthday' ? 'badge-type-bday' : item.actionType === 'Anniversary' ? 'badge-type-anni' : 'bg-info text-white'}">${item.actionType === 'Birthday' ? '🎂' : '💍'} ${item.actionType}</span></div></div><div class="d-flex align-items-center mb-2"><div class="avatar avatar-${item.actionType === 'Birthday' ? 'bday' : item.actionType === 'Anniversary' ? 'anni' : 'default'} me-2">${getInitials(item.name)}</div><div><h6 class="fw-bold mb-0" style="font-size:.95rem">${item.name}</h6>${sp}</div></div><a href="${wa}" target="_blank" onclick="markSent('${item.id}','${sk}','${item.name}','${item.actionType}')" class="btn btn-send ${isSent ? 'btn-sent-blue' : ''}">${isSent ? '<i class="fas fa-check-double"></i> Sent' : '<i class="fab fa-whatsapp"></i> Send'}</a></div></div>`;
+
+                list.innerHTML += `<div class="col-md-6 col-lg-4"><div class="custom-card p-3 ${bc}"><div class="d-flex justify-content-between align-items-center mb-2"><span class="badge-role">${item.role}</span><div>${tagHTML(item.tag)} <span class="badge ${item.actionType === 'Birthday' ? 'badge-type-bday' : item.actionType === 'Anniversary' ? 'badge-type-anni' : 'bg-info text-white'}">${item.actionType === 'Birthday' ? '🎂' : item.actionType === 'Anniversary' ? '💍' : '📢'} ${item.actionType}</span></div></div><div class="d-flex align-items-center mb-2"><div class="avatar avatar-${item.actionType === 'Birthday' ? 'bday' : item.actionType === 'Anniversary' ? 'anni' : 'default'} me-2">${getInitials(item.name)}</div><div><h6 class="fw-bold mb-0" style="font-size:.95rem">${item.name}</h6>${sp}</div></div><a href="${wa}" target="_blank" onclick="markSent('${item.id}','${sk}','${item.name}','${item.actionType}')" class="btn btn-send ${isSent ? 'btn-sent-blue' : ''}">${isSent ? '<i class="fas fa-check-double"></i> Sent' : '<i class="fab fa-whatsapp"></i> Send'}</a></div></div>`;
             });
         }
 
@@ -1325,23 +1465,144 @@
             push(ref(db, 'logs'), { name, type, date: todayStr, time: new Date().toLocaleTimeString(), action: 'Sent via WhatsApp' });
         };
 
-        // BULK SEND
-        window.bulkSend = () => {
+        // BULK SEND MODAL ENGINE
+        let isBulkSending = false;
+        let bulkCancelRequested = false;
+        let bulkModalInstance = null;
+
+        function getBulkModal() {
+            if (!bulkModalInstance) {
+                bulkModalInstance = new bootstrap.Modal(document.getElementById('bulkModal'));
+            }
+            return bulkModalInstance;
+        }
+
+        window.cancelBulkSend = () => {
+            if (isBulkSending) {
+                bulkCancelRequested = true;
+                document.getElementById('bulkStatusTitle').textContent = "Cancelling...";
+                document.getElementById('btnCancelBulk').disabled = true;
+            }
+        };
+
+        window.closeBulkModal = () => {
+            getBulkModal().hide();
+        };
+
+        window.bulkSend = async () => {
+            if (isBulkSending) return;
+
+            const rf = document.getElementById('roleFilter').value;
             const cm = document.getElementById('customMsg').value.trim();
             const tp = document.getElementById('templateSelect').value;
             let links = [];
-            globalData.forEach(m => {
-                if (m.birthdayDate && isToday(m.birthdayDate)) { const msg = cm ? `🏛️ *${getOrgName()}*\n\n📢 *Hello ${m.name},* 👋\n\n${cm}\n\nRegards,\n*KAB Family* 🏫` : T.birthday[tp](m.name); const p = String(m.phone).replace(/\D/g, ''); const c = p.length === 10 ? '91' + p : p; links.push({ url: `https://wa.me/${c}?text=${encodeURIComponent(msg)}`, id: m.id, key: 'lastSentBday', name: m.name, type: 'Birthday' }); }
-                if (m.anniversaryDate && isToday(m.anniversaryDate)) { const couple = m.spouseName ? `${m.name} & ${m.spouseName}` : m.name; const msg = cm ? `🏛️ *${getOrgName()}*\n\n📢 *Hello ${m.name},* 👋\n\n${cm}\n\nRegards,\n*KAB Family* 🏫` : T.anniversary[tp](couple); const p = String(m.phone).replace(/\D/g, ''); const c = p.length === 10 ? '91' + p : p; links.push({ url: `https://wa.me/${c}?text=${encodeURIComponent(msg)}`, id: m.id, key: 'lastSentAnni', name: m.name, type: 'Anniversary' }); }
-            });
-            if (!links.length) { alert("No events today!"); return; }
-            if (!confirm(`Open ${links.length} message(s)?`)) return;
-            const pg = document.getElementById('bulkProgress'), bar = document.getElementById('bulkBar'); pg.style.display = 'block';
-            links.forEach((l, i) => { setTimeout(() => { window.open(l.url, '_blank'); update(ref(db, 'members/' + l.id), { [l.key]: todayStr }); push(ref(db, 'logs'), { name: l.name, type: l.type, date: todayStr, time: new Date().toLocaleTimeString(), action: 'Bulk Sent' }); bar.style.width = ((i + 1) / links.length * 100) + '%'; if (i === links.length - 1) { setTimeout(() => { pg.style.display = 'none'; bar.style.width = '0%'; }, 2000); showToast(`🚀 ${links.length} sent!`); } }, i * 1500); });
+
+            if (cm) {
+                globalData.forEach(m => {
+                    if (rf !== "All" && m.role !== rf) return;
+                    const msg = `🏛️ *${getOrgName()}*\n\n📢 *Hello ${m.name},* 👋\n\n${cm}\n\nRegards,\n*KAB Family* 🏫`;
+                    const p = String(m.phone).replace(/\D/g, '');
+                    const c = p.length === 10 ? '91' + p : p;
+                    links.push({ url: getWaLink(c, msg), id: m.id, key: '', name: m.name, type: 'Event Invite' });
+                });
+            } else {
+                globalData.forEach(m => {
+                    if (rf !== "All" && m.role !== rf) return;
+                    if (m.birthdayDate && isToday(m.birthdayDate)) {
+                        const msg = T.birthday[tp](m.name);
+                        const p = String(m.phone).replace(/\D/g, '');
+                        const c = p.length === 10 ? '91' + p : p;
+                        links.push({ url: getWaLink(c, msg), id: m.id, key: 'lastSentBday', name: m.name, type: 'Birthday' });
+                    }
+                    if (m.anniversaryDate && isToday(m.anniversaryDate)) {
+                        const couple = m.spouseName ? `${m.name} & ${m.spouseName}` : m.name;
+                        const msg = T.anniversary[tp](couple);
+                        const p = String(m.phone).replace(/\D/g, '');
+                        const c = p.length === 10 ? '91' + p : p;
+                        links.push({ url: getWaLink(c, msg), id: m.id, key: 'lastSentAnni', name: m.name, type: 'Anniversary' });
+                    }
+                });
+            }
+
+            if (!links.length) { alert(cm ? "No members found in this role to send to!" : "No events today!"); return; }
+
+            // Initialize Modal State
+            bulkCancelRequested = false;
+            isBulkSending = true;
+            document.getElementById('bulkStatusIcon').innerHTML = `<div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>`;
+            document.getElementById('bulkStatusTitle').textContent = "Sending Messages...";
+            document.getElementById('bulkStatusCounts').textContent = `0 of ${links.length} Sent`;
+            document.getElementById('bulkProgressBar').style.width = '0%';
+            document.getElementById('bulkProgressBar').classList.add('progress-bar-animated');
+            document.getElementById('bulkCurrentName').textContent = "Initializing...";
+            document.getElementById('btnCancelBulk').style.display = 'inline-block';
+            document.getElementById('btnCancelBulk').disabled = false;
+            document.getElementById('btnCloseBulk').style.display = 'none';
+
+            getBulkModal().show();
+
+            // Wait a moment for modal animation setup
+            await new Promise(r => setTimeout(r, 600));
+
+            let sentCount = 0;
+            for (let i = 0; i < links.length; i++) {
+                if (bulkCancelRequested) break;
+
+                const l = links[i];
+                document.getElementById('bulkCurrentName').textContent = `Sending to: ${l.name}`;
+
+                // Open WhatsApp Tab
+                window.open(l.url, '_blank');
+
+                if (l.key) { update(ref(db, 'members/' + l.id), { [l.key]: todayStr }); }
+                push(ref(db, 'logs'), { name: l.name, type: l.type, date: todayStr, time: new Date().toLocaleTimeString(), action: 'Bulk Sent' });
+
+                sentCount++;
+                let pct = (sentCount / links.length) * 100;
+                document.getElementById('bulkProgressBar').style.width = pct + '%';
+                document.getElementById('bulkStatusCounts').textContent = `${sentCount} of ${links.length} Sent`;
+
+                // Add a dynamic delay to handle browser tab limitations and allow User Interface / Back navigation pausing
+                if (i < links.length - 1) {
+                    let waited = 0;
+                    while (waited < 1600 && !bulkCancelRequested) {
+                        await new Promise(r => setTimeout(r, 100)); // check flag condition every 100ms
+                        waited += 100;
+                    }
+                }
+            }
+
+            // Task Completed or Interrupted
+            isBulkSending = false;
+            document.getElementById('bulkProgressBar').classList.remove('progress-bar-animated');
+            document.getElementById('btnCancelBulk').style.display = 'none';
+            document.getElementById('btnCloseBulk').style.display = 'inline-block';
+
+            if (bulkCancelRequested) {
+                document.getElementById('bulkStatusIcon').innerHTML = `<i class="fas fa-exclamation-circle text-danger fa-3x"></i>`;
+                document.getElementById('bulkStatusTitle').textContent = "Cancelled!";
+                document.getElementById('bulkCurrentName').textContent = "Sending interrupted by user.";
+                showToast("⚠️ Bulk sending cancelled!");
+            } else {
+                document.getElementById('bulkStatusIcon').innerHTML = `<i class="fas fa-check-circle text-success fa-3x"></i>`;
+                document.getElementById('bulkStatusTitle').textContent = "Completed!";
+                document.getElementById('bulkCurrentName').textContent = "All messages dispatched.";
+                showToast(`🚀 ${sentCount} messages sent!`);
+            }
+            renderDashboard();
         };
 
         // GROUP MSG COPY
         window.copyGroupMsg = () => {
+            const cm = document.getElementById('customMsg').value.trim();
+            if (cm) {
+                const full = `🏛️ *${getOrgName()}*\n\n${cm}\n\nRegards,\n*KAB Family* 🏫`;
+                navigator.clipboard.writeText(full).then(() => showToast('📋 Copied! Paste in WhatsApp group'));
+                const box = document.getElementById('groupMsgBox'); box.style.display = 'block'; box.textContent = full;
+                setTimeout(() => box.style.display = 'none', 8000);
+                return;
+            }
+
             const tp = document.getElementById('templateSelect').value;
             let msgs = [];
             globalData.forEach(m => {
@@ -1368,7 +1629,9 @@
                 if (ef === 'Birthday' && !i.birthdayDate) return false;
                 if (ef === 'Anniversary' && !i.anniversaryDate) return false;
                 if (ef === 'Both' && (!i.birthdayDate || !i.anniversaryDate)) return false;
-                return i.name.toLowerCase().includes(search) || String(i.phone).includes(search) || (i.spouseName && i.spouseName.toLowerCase().includes(search));
+                const n = i.name || '';
+                const sp = i.spouseName || '';
+                return n.toLowerCase().includes(search) || String(i.phone).includes(search) || sp.toLowerCase().includes(search);
             }).forEach(item => {
                 let eb = '';
                 if (item.birthdayDate) eb += '<span class="badge badge-type-bday me-1">🎂</span>';
@@ -1508,17 +1771,42 @@
         };
         document.getElementById('btnSaveEdit').addEventListener('click', () => {
             const id = document.getElementById('editId').value;
+            const nm = document.getElementById('editName').value.trim();
+            const ph = document.getElementById('editPhone').value.trim();
             const ad = document.getElementById('editAnniDate').value;
             const sp = document.getElementById('editSpouseName').value.trim();
+
+            if (!nm || !ph) { alert("⚠️ Name & Phone required!"); return; }
             if (ad && !sp) { alert("⚠️ Spouse Name required for Anniversary!"); return; }
-            update(ref(db, 'members/' + id), {
-                name: document.getElementById('editName').value.trim(),
-                role: document.getElementById('editRole').value,
-                tag: document.getElementById('editTag').value,
-                birthdayDate: document.getElementById('editBdayDate').value,
-                anniversaryDate: ad, spouseName: sp,
-                phone: document.getElementById('editPhone').value.trim()
-            }).then(() => { editModal.hide(); showToast("✅ Updated!"); });
+
+            const btn = document.getElementById('btnSaveEdit');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+            btn.disabled = true;
+
+            const existing = globalData.find(x => x.id === id) || {};
+            const payload = { ...existing };
+            delete payload.id; // avoid writing id key to db
+
+            payload.name = nm;
+            payload.role = document.getElementById('editRole').value || 'Member';
+            payload.tag = document.getElementById('editTag').value || '';
+            payload.birthdayDate = document.getElementById('editBdayDate').value || '';
+            payload.anniversaryDate = ad || '';
+            payload.spouseName = sp || '';
+            payload.phone = ph;
+
+            update(ref(db, 'members/' + id), payload).then(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                editModal.hide();
+                showToast("✅ Updated!");
+            }).catch(e => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                alert("❌ Save failed: " + e.message);
+                console.error("Firebase Update Error:", e);
+            });
         });
         window.deleteItem = id => { if (confirm("Delete?")) remove(ref(db, 'members/' + id)).then(() => showToast("🗑️ Deleted!")); };
 
@@ -1549,11 +1837,43 @@
             const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Sample"); XLSX.writeFile(wb, "Sample_Format.xlsx");
         });
 
+        // CUSTOM MSG TEMPLATE GEN
+        function updateCustomMsgTemplate() {
+            const type = document.getElementById('msgTemplateType').value;
+            const title = document.getElementById('evTitle').value.trim() || '[Event/Topic]';
+            const datetime = document.getElementById('evDateTime').value.trim() || '[Date & Time]';
+            const venue = document.getElementById('evVenue').value.trim() || '[Venue/Link]';
+            const ta = document.getElementById('customMsg');
+
+            if (type === 'custom') {
+                if (ta.value.includes('kindly requested to attend') || ta.value.includes('cordially invited') || ta.value.includes('IMPORTANT UPDATE:')) {
+                    ta.value = '';
+                }
+                setTimeout(renderDashboard, 50);
+                return;
+            }
+
+            let msg = '';
+            if (type === 'meeting') {
+                msg = `You are kindly requested to attend the upcoming meeting regarding ${title}.\n\n📅 *Date & Time:* ${datetime}\n📍 *Venue:* ${venue}\n\nYour presence is highly valuable. Please make sure to be on time.\n\nThank you.`;
+            } else if (type === 'celebration') {
+                msg = `You and your family are cordially invited to join us for our grand ${title}!\n\nLet's come together and celebrate with joy and enthusiasm. 🎉✨\n\n📅 *Date & Time:* ${datetime}\n📍 *Venue:* ${venue}\n\nLooking forward to seeing you there! 🎊`;
+            } else if (type === 'important') {
+                msg = `*IMPORTANT UPDATE: ${title}* ⚠️\n\nPlease make a note of the following important information regarding ${title}.\n\n📅 *Effective Date:* ${datetime}\n📍 *Details/Location:* ${venue}\n\nKindly acknowledge and stay updated.\n\nThank you for your cooperation!`;
+            }
+            ta.value = msg;
+            renderDashboard();
+        }
+
+        ['msgTemplateType', 'evTitle', 'evDateTime', 'evVenue'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateCustomMsgTemplate);
+        });
+
         // LISTENERS
         document.getElementById('roleFilter').addEventListener('change', renderDashboard);
-        document.getElementById('customMsg').addEventListener('keyup', renderDashboard);
+        document.getElementById('customMsg').addEventListener('input', renderDashboard);
         document.getElementById('templateSelect').addEventListener('change', renderDashboard);
-        document.getElementById('searchInput').addEventListener('keyup', renderTable);
+        document.getElementById('searchInput').addEventListener('input', renderTable);
         document.getElementById('manageRoleFilter').addEventListener('change', renderTable);
         document.getElementById('manageEventFilter').addEventListener('change', renderTable);
     </script>
