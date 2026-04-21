@@ -660,6 +660,9 @@
             }
         }
     </style>
+    <!-- Ultra-Premium Libraries -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
 </head>
 
 <body>
@@ -830,10 +833,10 @@
         // ========== FETCH & DISPLAY ==========
         onValue(ref(db, 'members'), (snapshot) => {
             const listDiv = document.getElementById('displayList');
-            const data = snapshot.val();
+            const data = snapshot.val() || {};
             listDiv.innerHTML = "";
 
-            if (!data) { showEmptyState(listDiv); return; }
+            if (Object.keys(data).length === 0) { showEmptyState(listDiv, data); return; }
 
             const today = new Date();
             let count = 0;
@@ -859,7 +862,7 @@
             });
 
             if (count === 0) {
-                showEmptyState(listDiv);
+                showEmptyState(listDiv, data);
             } else {
                 // Add count badge at top
                 const badge = document.createElement('div');
@@ -900,14 +903,337 @@
             container.innerHTML += html;
         }
 
-        function showEmptyState(container) {
+        function getDaysUntil(dateStr) {
+            if (!dateStr) return Infinity;
+            const d = new Date(dateStr);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const next = new Date(today.getFullYear(), d.getMonth(), d.getDate());
+            if (next < today) next.setFullYear(today.getFullYear() + 1);
+            return Math.round((next - today) / 86400000);
+        }
+
+        function showEmptyState(container, allData = {}) {
+            const quotes = [
+                "Every day is a fresh canvas. Paint it brilliantly. ✨",
+                "Great things never come from comfort zones. 🚀",
+                "Your energy introduces you before you even speak. 🌟",
+                "Make today so awesome yesterday gets jealous. 🔥",
+                "Focus on the step in front of you, not the whole staircase. 🏔️",
+                "Believe you can and you're halfway there. 🕊️"
+            ];
+            const dailyQuote = quotes[new Date().getDate() % quotes.length];
+
+            let upcoming = [];
+            Object.values(allData).forEach(m => {
+                if (!m.name) return;
+                const bDays = getDaysUntil(m.birthdayDate);
+                if (bDays > 0 && bDays <= 7) upcoming.push({ name: m.name, type: 'Birthday', days: bDays });
+                const aDays = getDaysUntil(m.anniversaryDate);
+                if (aDays > 0 && aDays <= 7) {
+                    const couple = m.spouseName ? m.name + " & " + m.spouseName : m.name;
+                    upcoming.push({ name: couple, type: 'Anniversary', days: aDays });
+                }
+            });
+
+            upcoming.sort((a, b) => a.days - b.days);
+
+            let upcomingHtml = '';
+            if (upcoming.length > 0) {
+                const topUpcoming = upcoming.slice(0, 3);
+                const listItems = topUpcoming.map(item => {
+                    const isBday = item.type === 'Birthday';
+                    const iconColor = isBday ? '#ff6b6b' : '#a29bfe';
+                    const iconClass = isBday ? 'fa-birthday-cake' : 'fa-heart';
+                    const gradient = isBday ? 'linear-gradient(135deg, #ff6b6b, #ffa07a)' : 'linear-gradient(135deg, #a29bfe, #fd79a8)';
+                    
+                    return `
+                    <div style="background:rgba(255,255,255,0.03); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:15px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor:default;" onmouseover="this.style.transform='translateX(8px)'; this.style.background='rgba(255,255,255,0.08)';" onmouseout="this.style.transform='translateX(0)'; this.style.background='rgba(255,255,255,0.03)';">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:45px; height:45px; border-radius:14px; background:${gradient}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.1rem; box-shadow:0 8px 15px rgba(0,0,0,0.2);">
+                                <i class="fas ${iconClass}"></i>
+                            </div>
+                            <div class="text-start">
+                                <div style="font-weight:600; font-size:1rem; color:#fff; letter-spacing:0.5px;">${item.name}</div>
+                                <div style="font-size:0.75rem; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-top:2px;">${item.type}</div>
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-family:'Fredoka', sans-serif; font-size:1.4rem; color:${iconColor}; line-height:1; font-weight:600;">${item.days}</div>
+                            <div style="font-size:0.65rem; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px;">Day${item.days > 1 ? 's' : ''} Left</div>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                upcomingHtml = `
+                    <div style="margin-top:45px;">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:25px;">
+                            <div style="height:1px; flex:1; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.15));"></div>
+                            <h6 style="color:rgba(255,255,255,0.7); text-transform:uppercase; letter-spacing:2px; font-size:0.75rem; margin:0; font-weight:700;"><i class="fas fa-meteor me-2" style="color:#feca57;"></i>Sneak Peek</h6>
+                            <div style="height:1px; flex:1; background:linear-gradient(90deg, rgba(255,255,255,0.15), transparent);"></div>
+                        </div>
+                        ${listItems}
+                    </div>
+                `;
+            }
+
             container.innerHTML = `
-                <div class="no-events">
-                    <div style="font-size:4rem;margin-bottom:15px;">☕</div>
-                    <h4>No special events today!</h4>
-                    <p class="small mt-2">Check back tomorrow for more celebrations.</p>
+                <div id="particles-js" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;"></div>
+                
+                <style>
+                    .ultra-premium-card {
+                        position: relative;
+                        background: rgba(20, 20, 35, 0.4);
+                        backdrop-filter: blur(40px);
+                        -webkit-backdrop-filter: blur(40px);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        border-radius: 30px;
+                        padding: 50px 40px 40px;
+                        margin: 0 auto;
+                        max-width: 550px;
+                        box-shadow: 
+                            0 30px 60px rgba(0, 0, 0, 0.4), 
+                            inset 0 1px 0 rgba(255, 255, 255, 0.2), 
+                            inset 0 0 20px rgba(255, 255, 255, 0.05);
+                        transform: translateY(40px);
+                        opacity: 0;
+                        animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                        overflow: hidden;
+                        transform-style: preserve-3d;
+                    }
+                    .ultra-premium-card::before {
+                        content: '';
+                        position: absolute;
+                        top: -50%;
+                        left: -50%;
+                        width: 200%;
+                        height: 200%;
+                        background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
+                        opacity: 0;
+                        transition: opacity 0.5s;
+                        pointer-events: none;
+                        z-index: 0;
+                    }
+                    .ultra-premium-card::after {
+                         content: '';
+                         position: absolute;
+                         inset: -2px;
+                         border-radius: 32px;
+                         padding: 2px;
+                         background: conic-gradient(from 0deg, transparent 0deg, rgba(162, 155, 254, 0.4) 90deg, transparent 180deg, rgba(245, 87, 108, 0.4) 270deg, transparent 360deg);
+                         -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                         -webkit-mask-composite: xor;
+                         mask-composite: exclude;
+                         animation: borderSpin 4s linear infinite;
+                         z-index:-1;
+                    }
+                    @keyframes borderSpin {
+                        100% { transform: rotate(360deg); }
+                    }
+                    .ultra-premium-card:hover::before {
+                        opacity: 1;
+                    }
+                    @keyframes slideUpFade {
+                        to { transform: translateY(0); opacity: 1; }
+                    }
+                    .glowing-time {
+                        font-family: 'Fredoka', sans-serif;
+                        font-size: 5.5rem;
+                        font-weight: 600;
+                        line-height: 1;
+                        background: linear-gradient(180deg, #ffffff 0%, #a29bfe 100%);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        filter: drop-shadow(0 10px 20px rgba(162, 155, 254, 0.4));
+                        margin-bottom: 5px;
+                        position: relative;
+                        z-index: 1;
+                        transform: translateZ(30px);
+                    }
+                    .greeting-text {
+                        background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        font-weight: 700;
+                        font-size: 1.1rem;
+                        letter-spacing: 2px;
+                        text-transform: uppercase;
+                        margin-bottom: 20px;
+                        display: inline-block;
+                        transform: translateZ(20px);
+                    }
+                    .quote-container {
+                        position: relative;
+                        padding: 0 25px;
+                        z-index: 1;
+                        transform: translateZ(15px);
+                    }
+                    .quote-icon {
+                        font-size: 2.5rem;
+                        color: rgba(255, 255, 255, 0.1);
+                        position: absolute;
+                        top: -20px;
+                        left: -5px;
+                        font-family: serif;
+                        line-height: 1;
+                    }
+                    .weather-widget {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        background: rgba(255, 255, 255, 0.1);
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                        padding: 6px 15px;
+                        border-radius: 20px;
+                        font-size: 0.9rem;
+                        color: #fff;
+                        margin-bottom: 20px;
+                        transform: translateZ(25px);
+                    }
+                    .zen-btn {
+                        position: fixed;
+                        top: 25px;
+                        right: 25px;
+                        background: rgba(255, 255, 255, 0.1);
+                        backdrop-filter: blur(10px);
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                        color: #fff;
+                        width: 45px;
+                        height: 45px;
+                        border-radius: 50%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        cursor: pointer;
+                        z-index: 100;
+                        transition: 0.3s;
+                        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    }
+                    .zen-btn:hover {
+                        background: rgba(255, 255, 255, 0.2);
+                        transform: scale(1.1);
+                    }
+                    .zen-btn.playing {
+                        background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+                        animation: pulseMusic 2s infinite;
+                    }
+                    @keyframes pulseMusic {
+                        0% { box-shadow: 0 0 0 0 rgba(162, 155, 254, 0.4); }
+                        70% { box-shadow: 0 0 0 10px rgba(162, 155, 254, 0); }
+                        100% { box-shadow: 0 0 0 0 rgba(162, 155, 254, 0); }
+                    }
+                </style>
+                
+                <button class="zen-btn" id="zenBtn" onclick="toggleZenMode()" title="Zen Mode">🎵</button>
+                <audio id="zenAudio" loop src="https://cdn.freesound.org/previews/387/387232_1474204-lq.mp3" type="audio/mpeg"></audio>
+
+                <div class="ultra-premium-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
+                    <div style="text-align:center; position:relative; z-index:1;">
+                        <div class="glowing-time" id="liveClockPremium">12:00</div>
+                        <div class="greeting-text" id="liveGreeting">GOOD MORNING</div>
+                        <br>
+                        <div class="weather-widget" id="weatherWidget">
+                            <span class="spinner-border spinner-border-sm"></span> Loading Weather...
+                        </div>
+                        
+                        <div class="quote-container mt-2">
+                            <span class="quote-icon">❝</span>
+                            <p style="color:rgba(255,255,255,0.85); font-size:1.15rem; font-style:italic; line-height:1.6; font-weight:300; margin:0;">
+                                ${dailyQuote}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="position:relative; z-index:1; transform: translateZ(10px);">
+                        ${upcomingHtml}
+                    </div>
                 </div>
             `;
+
+            if(window.particlesJS) {
+                particlesJS("particles-js", {
+                    "particles": {
+                        "number": { "value": 40, "density": { "enable": true, "value_area": 800 } },
+                        "color": { "value": "#ffffff" },
+                        "shape": { "type": "circle" },
+                        "opacity": { "value": 0.3, "random": true, "anim": { "enable": true, "speed": 1, "opacity_min": 0.1, "sync": false } },
+                        "size": { "value": 3, "random": true, "anim": { "enable": false } },
+                        "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.2, "width": 1 },
+                        "move": { "enable": true, "speed": 1.5, "direction": "none", "random": true, "straight": false, "out_mode": "out", "bounce": false }
+                    },
+                    "interactivity": {
+                        "detect_on": "window",
+                        "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" }, "resize": true },
+                        "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 0.5 } }, "push": { "particles_nb": 4 } }
+                    },
+                    "retina_detect": true
+                });
+            }
+
+            if(window.VanillaTilt) {
+                VanillaTilt.init(document.querySelector(".ultra-premium-card"));
+            }
+
+            fetch("https://api.open-meteo.com/v1/forecast?latitude=25.5941&longitude=85.1376&current=temperature_2m,weather_code")
+            .then(res => res.json())
+            .then(data => {
+                const temp = Math.round(data.current.temperature_2m);
+                const code = data.current.weather_code;
+                let icon = "☁️";
+                if(code === 0) icon = "☀️";
+                else if(code >= 1 && code <= 3) icon = "🌤️";
+                else if(code >= 61 && code <= 65) icon = "🌧️";
+                else if(code >= 71) icon = "❄️";
+                else if(code >= 95) icon = "⛈️";
+                document.getElementById('weatherWidget').innerHTML = icon + " " + temp + "°C, Bihar";
+            }).catch(() => {
+                document.getElementById('weatherWidget').style.display = 'none';
+            });
+
+            function updatePremiumClock() {
+                const el = document.getElementById('liveClockPremium');
+                const greetEl = document.getElementById('liveGreeting');
+                if(!el) return;
+                
+                const now = new Date();
+                let h = now.getHours();
+                const m = now.getMinutes().toString().padStart(2, '0');
+                
+                let greeting = "GOOD EVENING";
+                if(h < 12) greeting = "GOOD MORNING";
+                else if(h < 17) greeting = "GOOD AFTERNOON";
+                
+                if (h === 0) h = 12;
+                if (h > 12) h -= 12;
+                
+                el.innerText = h + ":" + m;
+                greetEl.innerText = greeting;
+            }
+            updatePremiumClock();
+            setInterval(updatePremiumClock, 10000);
+            
+            window.toggleZenMode = function() {
+                const audio = document.getElementById('zenAudio');
+                const btn = document.getElementById('zenBtn');
+                if (!audio) return;
+                
+                if (audio.paused) {
+                    audio.volume = 0.5;
+                    audio.play().then(() => {
+                        btn.classList.add('playing');
+                    }).catch(error => {
+                        console.error("Audio playback error:", error);
+                        // Fallback if the link somehow breaks again or browser restricts it
+                        if (error.name === 'NotSupportedError') {
+                            audio.src = "https://actions.google.com/sounds/v1/water/gentle_rain.ogg";
+                            audio.play().then(() => btn.classList.add('playing')).catch(e => console.log(e));
+                        }
+                    });
+                } else {
+                    audio.pause();
+                    btn.classList.remove('playing');
+                }
+            };
         }
 
         // ===== PREMIUM LOGIN SYSTEM =====

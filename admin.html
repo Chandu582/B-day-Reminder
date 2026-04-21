@@ -1433,6 +1433,8 @@
                     msg = `🏛️ *${getOrgName()}*\n\n📢 *Hello ${item.name},* 👋\n\n${cm}\n\nRegards,\n*KAB Family* 🏫`;
                     icon = '<i class="fas fa-bullhorn" style="color:var(--primary)"></i>';
                     bc = "border-invite";
+                    isSent = item.lastSentCustom === todayStr;
+                    sk = 'lastSentCustom';
                 }
                 else if (item.actionType === 'Birthday') {
                     msg = T.birthday[tp](item.name);
@@ -1503,7 +1505,7 @@
                     const msg = `🏛️ *${getOrgName()}*\n\n📢 *Hello ${m.name},* 👋\n\n${cm}\n\nRegards,\n*KAB Family* 🏫`;
                     const p = String(m.phone).replace(/\D/g, '');
                     const c = p.length === 10 ? '91' + p : p;
-                    links.push({ url: getWaLink(c, msg), id: m.id, key: '', name: m.name, type: 'Event Invite' });
+                    links.push({ url: getWaLink(c, msg), id: m.id, key: 'lastSentCustom', name: m.name, type: 'Event Invite' });
                 });
             } else {
                 globalData.forEach(m => {
